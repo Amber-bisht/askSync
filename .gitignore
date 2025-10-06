@@ -1,0 +1,66 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# Build output
+dist/
+build/
+out/
+coverage/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+*.out
+*.err
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Cache
+.cache/
+.next/
+.nuxt/
+.vercel/
+firebase-debug.log
+.eslintcache
+
+# Optional - if using TypeScript
+*.tsbuildinfo
+
+# Optional - if using PM2 or other process managers
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional - if using Docker
+docker-compose.override.yml
+
+# Optional - if using local uploads
+uploads/

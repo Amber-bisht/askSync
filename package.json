@@ -1,0 +1,50 @@
+{
+  "name": "asksync",
+  "version": "1.0.0",
+  "description": "AskSync - AI-Powered Quiz Platform",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 5000",
+    "build": "next build",
+    "start": "next start -p 5000",
+    "lint": "next lint",
+    "test:gemini": "node scripts/test-gemini.js",
+    "test:ai": "npm run test:gemini",
+    "setup:admin": "node scripts/setup-admin.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@headlessui/react": "^1.7.17",
+    "@heroicons/react": "^2.0.18",
+    "autoprefixer": "^10.4.16",
+    "bcryptjs": "^2.4.3",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^17.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.0.0",
+    "nanoid": "^5.1.5",
+    "next": "^15.5.0",
+    "next-auth": "^4.24.0",
+    "postcss": "^8.4.31",
+    "razorpay": "^2.9.6",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "react-hot-toast": "^2.4.1",
+    "react-icons": "^5.5.0",
+    "tailwindcss": "^3.3.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.4",
+    "@types/node": "^20.8.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@types/uuid": "^9.0.6",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "eslint": "^8.51.0",
+    "eslint-config-next": "^15.5.0",
+    "typescript": "^5.2.0"
+  }
+}
