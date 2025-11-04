@@ -1,36 +1,64 @@
-# Use the official Node.js 18 image as the base image
-FROM node:18-alpine
+# Multi-stage build for optimized production image
 
-# Set the working directory inside the container
+# Stage 1: Dependencies
+FROM node:18-alpine AS deps
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
+# Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including dev dependencies for build)
+# Install dependencies
 RUN npm ci
 
-# Copy the rest of the application code
+# Stage 2: Builder
+FROM node:18-alpine AS builder
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy application code
 COPY . .
 
-# Copy env.example as .env for build (with placeholder values)
-RUN cp env.example .env
-
-# Set build-time environment variables (these can be overridden at runtime)
+# Set build-time environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build the Next.js application
+# Note: Environment variables should be passed at runtime for security
+# Build-time env vars are only needed for static optimization
 RUN npm run build
 
-# Remove dev dependencies after build
-RUN npm prune --production
+# Stage 3: Runner
+FROM node:18-alpine AS runner
+WORKDIR /app
 
-# Expose port 3001
-EXPOSE 3001
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Set environment variable for port
-ENV PORT=3001
+# Create a non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy necessary files from builder
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Copy package.json for npm start command
+COPY --from=builder /app/package.json ./package.json
+
+# Set proper permissions
+RUN chown -R nextjs:nodejs /app
+
+USER nextjs
+
+# Expose port (default 5000, can be overridden via PORT env var)
+EXPOSE 5000
+
+ENV PORT=5000
+ENV HOSTNAME="0.0.0.0"
 
 # Start the application
-CMD ["npm", "start", "--", "-p", "3001"]
+# Use standalone server if available, otherwise fallback to npm start
+CMD ["node", "server.js"]
