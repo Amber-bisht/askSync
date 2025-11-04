@@ -6,11 +6,17 @@ on:
   pull_request:
     branches: [ main, master, develop ]
   workflow_dispatch:
+    inputs:
+      rollback_tag:
+        description: 'Backup tag to rollback to (optional, uses most recent if empty)'
+        required: false
+        type: string
 
 env:
   NODE_VERSION: '18'
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  REGISTRY: docker.io
+  DOCKERHUB_USERNAME: amberbisht
+  IMAGE_NAME: amberbisht/asksync
 
 jobs:
   # Lint and Test Job
@@ -103,18 +109,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -171,17 +176,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Run Trivy vulnerability scanner on Docker image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          image-ref: ${{ env.IMAGE_NAME }}:latest
           format: 'table'
           exit-code: '0'
           severity: 'CRITICAL,HIGH'
@@ -191,7 +195,7 @@ jobs:
     name: Deploy to DigitalOcean VPS
     runs-on: ubuntu-latest
     needs: [docker-build, security-scan]
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && (github.event_name != 'workflow_dispatch' || github.event.inputs.rollback_tag == '')
     environment:
       name: production
       url: ${{ secrets.DEPLOYMENT_URL || secrets.DO_HOST }}
@@ -217,18 +221,32 @@ jobs:
           #!/bin/bash
           set -e
           
-          IMAGE_NAME="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          IMAGE_NAME="${{ env.DOCKERHUB_USERNAME }}/asksync:latest"
           CONTAINER_NAME="asksync-app"
           APP_DIR="/opt/asksync"
+          BACKUP_TAG="backup-$(date +%Y%m%d-%H%M%S)"
           
           echo "🚀 Starting deployment..."
           
-          # Login to GitHub Container Registry
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+          # Login to Docker Hub
+          echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          
+          # Save current running image as backup before deployment
+          if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
+            echo "💾 Saving current image as backup..."
+            CURRENT_IMAGE=$(docker inspect $CONTAINER_NAME --format='{{.Config.Image}}')
+            if [ -n "$CURRENT_IMAGE" ] && [ "$CURRENT_IMAGE" != "$IMAGE_NAME" ]; then
+              docker tag "$CURRENT_IMAGE" "${{ env.DOCKERHUB_USERNAME }}/asksync:$BACKUP_TAG" || true
+              echo "✅ Backup saved as: ${{ env.DOCKERHUB_USERNAME }}/asksync:$BACKUP_TAG"
+            fi
+          fi
           
           # Pull latest image
           echo "📦 Pulling latest Docker image..."
-          docker pull $IMAGE_NAME
+          docker pull $IMAGE_NAME || {
+            echo "❌ Failed to pull image!"
+            exit 1
+          }
           
           # Stop and remove old container if exists
           if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
@@ -267,17 +285,62 @@ jobs:
           if [ "$(docker ps -q -f name=$CONTAINER_NAME)" ]; then
             echo "✅ Container is running!"
             docker ps -f name=$CONTAINER_NAME
+            
+            # Health check
+            echo "🏥 Running health check..."
+            sleep 5
+            if curl -f -s http://localhost:5000/api/health > /dev/null; then
+              echo "✅ Health check passed!"
+              echo "🎉 Deployment completed successfully!"
+              
+              # Keep only last 5 backups, remove older ones
+              echo "🧹 Cleaning up old backups (keeping last 5)..."
+              docker images "${{ env.DOCKERHUB_USERNAME }}/asksync" --format "{{.Repository}}:{{.Tag}}" | grep backup | sort -r | tail -n +6 | xargs -r docker rmi || true
+            else
+              echo "⚠️  Health check failed, but container is running"
+            fi
           else
-            echo "❌ Container failed to start!"
-            docker logs $CONTAINER_NAME
-            exit 1
+            echo "❌ Container failed to start! Attempting rollback..."
+            docker logs $CONTAINER_NAME || true
+            
+            # Rollback to previous image
+            PREVIOUS_IMAGE=$(docker images "${{ env.DOCKERHUB_USERNAME }}/asksync" --format "{{.Repository}}:{{.Tag}}" | grep backup | sort -r | head -1)
+            
+            if [ -n "$PREVIOUS_IMAGE" ]; then
+              echo "🔄 Rolling back to: $PREVIOUS_IMAGE"
+              docker run -d \
+                --name $CONTAINER_NAME \
+                --restart unless-stopped \
+                -p 5000:5000 \
+                -e NODE_ENV=production \
+                -e PORT=5000 \
+                -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+                -e GOOGLE_GEMINI_API_KEY="${{ secrets.GOOGLE_GEMINI_API_KEY }}" \
+                -e NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
+                -e NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
+                -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+                -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+                -e GOOGLE_CALLBACK_URL="${{ secrets.GOOGLE_CALLBACK_URL }}" \
+                -e RAZORPAY_KEY_ID="${{ secrets.RAZORPAY_KEY_ID }}" \
+                -e RAZORPAY_KEY_SECRET="${{ secrets.RAZORPAY_KEY_SECRET }}" \
+                $PREVIOUS_IMAGE
+              
+              sleep 5
+              if [ "$(docker ps -q -f name=$CONTAINER_NAME)" ]; then
+                echo "✅ Rollback successful! Previous version is running."
+              else
+                echo "❌ Rollback also failed! Manual intervention required."
+                exit 1
+              fi
+            else
+              echo "❌ No backup image found for rollback!"
+              exit 1
+            fi
           fi
           
-          # Clean up old images
-          echo "🧹 Cleaning up old images..."
+          # Clean up unused images (keep backups)
+          echo "🧹 Cleaning up unused images..."
           docker image prune -f
-          
-          echo "🎉 Deployment completed successfully!"
           EOF
           chmod +x deploy.sh
 
@@ -286,8 +349,10 @@ jobs:
           DO_SSH_PASSWORD: ${{ secrets.DO_SSH_PASSWORD }}
           DO_HOST: ${{ secrets.DO_HOST }}
           DO_USER: ${{ secrets.DO_USER || 'root' }}
+          DOCKERHUB_USERNAME: ${{ env.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          sshpass -p "$DO_SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=~/.ssh/known_hosts $DO_USER@$DO_HOST 'bash -s' < deploy.sh
+          sshpass -p "$DO_SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=~/.ssh/known_hosts $DO_USER@$DO_HOST "DOCKERHUB_USERNAME='$DOCKERHUB_USERNAME' DOCKERHUB_TOKEN='$DOCKERHUB_TOKEN' bash -s" < deploy.sh
 
       - name: Verify deployment
         env:
@@ -338,4 +403,123 @@ jobs:
           
           echo "❌ Health check failed after 5 attempts"
           exit 1
+
+  # Manual Rollback Job
+  rollback:
+    name: Manual Rollback
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.rollback_tag != '' && github.event.inputs.rollback_tag != null
+    environment:
+      name: production
+    
+    steps:
+      - name: Install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Create rollback script
+        run: |
+          cat > rollback.sh << 'EOF'
+          #!/bin/bash
+          set -e
+          
+          CONTAINER_NAME="asksync-app"
+          IMAGE_NAME="${{ env.DOCKERHUB_USERNAME }}/asksync"
+          
+          echo "🔄 Starting rollback process..."
+          
+          # Login to Docker Hub
+          echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          
+          # List available backup images
+          echo "📋 Available backup images:"
+          docker images $IMAGE_NAME --format "{{.Repository}}:{{.Tag}}" | grep backup | sort -r
+          
+          # Get the most recent backup or use specified tag
+          if [ -n "$ROLLBACK_TAG" ]; then
+            ROLLBACK_IMAGE="$IMAGE_NAME:$ROLLBACK_TAG"
+          else
+            ROLLBACK_IMAGE=$(docker images $IMAGE_NAME --format "{{.Repository}}:{{.Tag}}" | grep backup | sort -r | head -1)
+          fi
+          
+          if [ -z "$ROLLBACK_IMAGE" ]; then
+            echo "❌ No backup image found!"
+            exit 1
+          fi
+          
+          echo "🔄 Rolling back to: $ROLLBACK_IMAGE"
+          
+          # Stop and remove current container
+          if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
+            echo "🛑 Stopping current container..."
+            docker stop $CONTAINER_NAME || true
+            docker rm $CONTAINER_NAME || true
+          fi
+          
+          # Pull the backup image if it's not local
+          docker pull $ROLLBACK_IMAGE || echo "⚠️  Image not found in registry, using local image"
+          
+          # Run the backup image
+          echo "🐳 Starting rollback container..."
+          docker run -d \
+            --name $CONTAINER_NAME \
+            --restart unless-stopped \
+            -p 5000:5000 \
+            -e NODE_ENV=production \
+            -e PORT=5000 \
+            -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+            -e GOOGLE_GEMINI_API_KEY="${{ secrets.GOOGLE_GEMINI_API_KEY }}" \
+            -e NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
+            -e NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
+            -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+            -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+            -e GOOGLE_CALLBACK_URL="${{ secrets.GOOGLE_CALLBACK_URL }}" \
+            -e RAZORPAY_KEY_ID="${{ secrets.RAZORPAY_KEY_ID }}" \
+            -e RAZORPAY_KEY_SECRET="${{ secrets.RAZORPAY_KEY_SECRET }}" \
+            $ROLLBACK_IMAGE
+          
+          # Wait for container to start
+          echo "⏳ Waiting for container to start..."
+          sleep 10
+          
+          # Check container status
+          if [ "$(docker ps -q -f name=$CONTAINER_NAME)" ]; then
+            echo "✅ Rollback successful! Container is running."
+            docker ps -f name=$CONTAINER_NAME
+            
+            # Health check
+            echo "🏥 Running health check..."
+            sleep 5
+            if curl -f -s http://localhost:5000/api/health > /dev/null; then
+              echo "✅ Health check passed!"
+            else
+              echo "⚠️  Health check failed, but container is running"
+            fi
+          else
+            echo "❌ Rollback failed!"
+            docker logs $CONTAINER_NAME || true
+            exit 1
+          fi
+          
+          echo "🎉 Rollback completed successfully!"
+          EOF
+          chmod +x rollback.sh
+
+      - name: Rollback on VPS
+        env:
+          DO_SSH_PASSWORD: ${{ secrets.DO_SSH_PASSWORD }}
+          DO_HOST: ${{ secrets.DO_HOST }}
+          DO_USER: ${{ secrets.DO_USER || 'root' }}
+          DOCKERHUB_USERNAME: ${{ env.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          ROLLBACK_TAG: ${{ github.event.inputs.rollback_tag || '' }}
+        run: |
+          sshpass -p "$DO_SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=~/.ssh/known_hosts $DO_USER@$DO_HOST "DOCKERHUB_USERNAME='$DOCKERHUB_USERNAME' DOCKERHUB_TOKEN='$DOCKERHUB_TOKEN' ROLLBACK_TAG='$ROLLBACK_TAG' bash -s" < rollback.sh
 
