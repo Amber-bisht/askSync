@@ -5,11 +5,6 @@ import User from '@/models/User';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
-
 export async function POST(request: NextRequest) {
   try {
     // Check if user is authenticated using NextAuth
@@ -40,6 +35,16 @@ export async function POST(request: NextRequest) {
     const amount = planPricing[plan as keyof typeof planPricing];
     const currency = 'INR';
     const receipt = `sub_${dbUser._id.toString().slice(-8)}_${Date.now().toString().slice(-8)}`;
+
+    // Initialize Razorpay lazily (only when API is called)
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      return NextResponse.json({ error: 'Payment gateway not configured' }, { status: 500 });
+    }
+
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
 
     // Create Razorpay order
     const order = await razorpay.orders.create({
