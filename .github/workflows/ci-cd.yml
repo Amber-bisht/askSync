@@ -272,7 +272,7 @@ jobs:
           docker run -d \
             --name $CONTAINER_NAME \
             --restart unless-stopped \
-            -p 5000:5000 \
+            -p 3005:5000 \
             -e NODE_ENV=production \
             -e PORT=5000 \
             -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
@@ -298,7 +298,7 @@ jobs:
             # Health check
             echo "🏥 Running health check..."
             sleep 5
-            if curl -f -s http://localhost:5000/api/health > /dev/null; then
+            if curl -f -s http://localhost:3005/api/health > /dev/null; then
               echo "✅ Health check passed!"
               echo "🎉 Deployment completed successfully!"
               
@@ -320,7 +320,7 @@ jobs:
               docker run -d \
                 --name $CONTAINER_NAME \
                 --restart unless-stopped \
-                -p 5000:5000 \
+                -p 3005:5000 \
                 -e NODE_ENV=production \
                 -e PORT=5000 \
                 -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
@@ -404,7 +404,7 @@ jobs:
           if [[ $TARGET_URL =~ :[0-9]+$ ]]; then
             HEALTH_URL="${TARGET_URL}/api/health"
           else
-            HEALTH_URL="${TARGET_URL}:5000/api/health"
+            HEALTH_URL="${TARGET_URL}:3005/api/health"
           fi
           
           echo "🏥 Checking health endpoint: ${HEALTH_URL}"
@@ -490,7 +490,7 @@ jobs:
           docker run -d \
             --name $CONTAINER_NAME \
             --restart unless-stopped \
-            -p 5000:5000 \
+            -p 3005:5000 \
             -e NODE_ENV=production \
             -e PORT=5000 \
             -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
@@ -516,7 +516,7 @@ jobs:
             # Health check
             echo "🏥 Running health check..."
             sleep 5
-            if curl -f -s http://localhost:5000/api/health > /dev/null; then
+            if curl -f -s http://localhost:3005/api/health > /dev/null; then
               echo "✅ Health check passed!"
             else
               echo "⚠️  Health check failed, but container is running"
