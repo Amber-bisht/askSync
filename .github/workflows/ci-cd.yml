@@ -200,12 +200,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up SSH key
+      - name: Install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
 
       - name: Create deployment script
         run: |
@@ -251,6 +255,8 @@ jobs:
             -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
             -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
             -e GOOGLE_CALLBACK_URL="${{ secrets.GOOGLE_CALLBACK_URL }}" \
+            -e RAZORPAY_KEY_ID="${{ secrets.RAZORPAY_KEY_ID }}" \
+            -e RAZORPAY_KEY_SECRET="${{ secrets.RAZORPAY_KEY_SECRET }}" \
             $IMAGE_NAME
           
           # Wait for container to start
@@ -277,18 +283,19 @@ jobs:
 
       - name: Deploy to DigitalOcean VPS
         env:
-          SSH_KEY: ${{ secrets.DO_SSH_KEY }}
+          DO_SSH_PASSWORD: ${{ secrets.DO_SSH_PASSWORD }}
           DO_HOST: ${{ secrets.DO_HOST }}
           DO_USER: ${{ secrets.DO_USER || 'root' }}
         run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $DO_USER@$DO_HOST 'bash -s' < deploy.sh
+          sshpass -p "$DO_SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=~/.ssh/known_hosts $DO_USER@$DO_HOST 'bash -s' < deploy.sh
 
       - name: Verify deployment
         env:
+          DO_SSH_PASSWORD: ${{ secrets.DO_SSH_PASSWORD }}
           DO_HOST: ${{ secrets.DO_HOST }}
           DO_USER: ${{ secrets.DO_USER || 'root' }}
         run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $DO_USER@$DO_HOST 'docker ps -f name=asksync-app'
+          sshpass -p "$DO_SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=~/.ssh/known_hosts $DO_USER@$DO_HOST 'docker ps -f name=asksync-app'
           echo "✅ Deployment verified!"
 
   # Health Check Job
@@ -310,11 +317,18 @@ jobs:
             DEPLOYMENT_URL="http://$DEPLOYMENT_URL"
           fi
           
-          echo "🏥 Checking health endpoint: ${DEPLOYMENT_URL}:5000/api/health"
+          # Remove port if already in URL
+          if [[ $DEPLOYMENT_URL =~ :[0-9]+$ ]]; then
+            HEALTH_URL="${DEPLOYMENT_URL}/api/health"
+          else
+            HEALTH_URL="${DEPLOYMENT_URL}:5000/api/health"
+          fi
+          
+          echo "🏥 Checking health endpoint: ${HEALTH_URL}"
           
           # Try health check with retries
           for i in {1..5}; do
-            if curl -f -s "${DEPLOYMENT_URL}:5000/api/health" > /dev/null; then
+            if curl -f -s "${HEALTH_URL}" > /dev/null; then
               echo "✅ Health check passed!"
               exit 0
             fi
