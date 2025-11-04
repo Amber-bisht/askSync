@@ -91,6 +91,7 @@ jobs:
           name: build-artifacts
           path: .next
           retention-days: 1
+          if-no-files-found: warn
 
   # Docker Build and Push Job
   docker-build:
