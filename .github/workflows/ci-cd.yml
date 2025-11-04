@@ -198,7 +198,6 @@ jobs:
     if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && (github.event_name != 'workflow_dispatch' || github.event.inputs.rollback_tag == '')
     environment:
       name: production
-      url: ${{ secrets.DEPLOYMENT_URL }}
     
     steps:
       - name: Checkout code
@@ -375,18 +374,27 @@ jobs:
         run: sleep 30
 
       - name: Health check
+        env:
+          DEPLOYMENT_URL: ${{ secrets.DEPLOYMENT_URL }}
+          DO_HOST: ${{ secrets.DO_HOST }}
         run: |
-          DEPLOYMENT_URL="${{ secrets.DEPLOYMENT_URL || secrets.DO_HOST }}"
+          # Use DEPLOYMENT_URL if set, otherwise use DO_HOST
+          if [ -n "$DEPLOYMENT_URL" ]; then
+            TARGET_URL="$DEPLOYMENT_URL"
+          else
+            TARGET_URL="$DO_HOST"
+          fi
+          
           # Remove protocol if present and add http://
-          if [[ ! $DEPLOYMENT_URL =~ ^https?:// ]]; then
-            DEPLOYMENT_URL="http://$DEPLOYMENT_URL"
+          if [[ ! $TARGET_URL =~ ^https?:// ]]; then
+            TARGET_URL="http://$TARGET_URL"
           fi
           
           # Remove port if already in URL
-          if [[ $DEPLOYMENT_URL =~ :[0-9]+$ ]]; then
-            HEALTH_URL="${DEPLOYMENT_URL}/api/health"
+          if [[ $TARGET_URL =~ :[0-9]+$ ]]; then
+            HEALTH_URL="${TARGET_URL}/api/health"
           else
-            HEALTH_URL="${DEPLOYMENT_URL}:5000/api/health"
+            HEALTH_URL="${TARGET_URL}:5000/api/health"
           fi
           
           echo "🏥 Checking health endpoint: ${HEALTH_URL}"
@@ -395,6 +403,7 @@ jobs:
           for i in {1..5}; do
             if curl -f -s "${HEALTH_URL}" > /dev/null; then
               echo "✅ Health check passed!"
+              curl -s "${HEALTH_URL}"
               exit 0
             fi
             echo "⏳ Attempt $i failed, retrying in 10 seconds..."
