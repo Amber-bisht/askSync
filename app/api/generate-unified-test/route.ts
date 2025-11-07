@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateGroqContent } from '@/lib/groq';
 import connectDB from '@/lib/mongodb';
 import { UnifiedTest, IUnifiedTestQuestion } from '@/models/UnifiedTest';
 import User from '@/models/User';
@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
+// Using Groq AI instead of Google Gemini
 
 // Helper function to extract JSON from markdown code blocks
 function extractJsonFromMarkdown(text: string): string {
@@ -106,8 +106,6 @@ export async function POST(request: NextRequest) {
           }, { status: 403 });
         }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
     const questions = existingQuestions || [];
     let questionId = questions.length + 1;
 
@@ -132,7 +130,9 @@ export async function POST(request: NextRequest) {
       
       while (retryCount < maxRetries) {
         try {
-          mcqResult = await model.generateContent(mcqPrompt);
+          const systemPrompt = "You are an expert educator creating multiple choice questions. Always respond with valid JSON.";
+          const responseText = await generateGroqContent(mcqPrompt, systemPrompt);
+          mcqResult = { response: { text: () => responseText } };
           break;
         } catch (error: unknown) {
           retryCount++;
@@ -210,7 +210,9 @@ export async function POST(request: NextRequest) {
       
       while (retryCount < maxRetries) {
         try {
-          qaResult = await model.generateContent(qaPrompt);
+          const systemPrompt = "You are an expert educator creating descriptive answer questions. Always respond with valid JSON.";
+          const responseText = await generateGroqContent(qaPrompt, systemPrompt);
+          qaResult = { response: { text: () => responseText } };
           break;
         } catch (error: unknown) {
           retryCount++;

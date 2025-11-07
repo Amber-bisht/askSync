@@ -4,7 +4,7 @@ const nextConfig = {
   output: 'standalone',
   env: {
     MONGODB_URI: process.env.MONGODB_URI,
-    GOOGLE_GEMINI_API_KEY: process.env.GOOGLE_GEMINI_API_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,

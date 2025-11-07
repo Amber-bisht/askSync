@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateGroqContent } from '@/lib/groq';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
+// Using Groq AI instead of Google Gemini
 
 export async function POST(request: NextRequest) {
   try {
@@ -70,17 +70,11 @@ Grading criteria:
 
 Be fair but thorough in your evaluation. Consider partial credit for partially correct answers.`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    
-    const result = await model.generateContent([
-      "You are an expert educator grading student answers. Always respond with valid JSON.",
-      prompt
-    ]);
-    
-    const content = result.response.text();
+    const systemPrompt = "You are an expert educator grading student answers. Always respond with valid JSON.";
+    const content = await generateGroqContent(prompt, systemPrompt);
     
     if (!content) {
-      throw new Error('No response from Google Gemini');
+      throw new Error('No response from Groq AI');
     }
 
     // Try to parse the JSON response

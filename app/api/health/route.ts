@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { testGroqConnection } from '@/lib/groq';
 
 export async function GET() {
   try {
@@ -14,16 +14,14 @@ export async function GET() {
       console.error('MongoDB connection failed:', error);
     }
 
-    // Test Google Gemini API
-    let geminiStatus = 'disconnected';
+    // Test Groq API
+    let groqStatus = 'disconnected';
     try {
-      const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      await model.generateContent("Hello");
-      geminiStatus = 'connected';
+      const isConnected = await testGroqConnection();
+      groqStatus = isConnected ? 'connected' : 'error';
     } catch (error) {
-      geminiStatus = 'error';
-      console.error('Google Gemini API test failed:', error);
+      groqStatus = 'error';
+      console.error('Groq API test failed:', error);
     }
 
     return NextResponse.json({
@@ -31,13 +29,13 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       services: {
         mongodb: mongoStatus,
-        googleGemini: geminiStatus,
+        groqAI: groqStatus,
       },
       environment: {
         nodeEnv: process.env.NODE_ENV,
         port: process.env.PORT || 5000,
         hasMongoUri: !!process.env.MONGODB_URI,
-        hasGeminiKey: !!process.env.GOOGLE_GEMINI_API_KEY,
+        hasGroqKey: !!process.env.GROQ_API_KEY,
         hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
         hasGoogleClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
       }

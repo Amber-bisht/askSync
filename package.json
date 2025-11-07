@@ -9,7 +9,8 @@
     "start": "next start -p 5000",
     "lint": "next lint",
     "test:gemini": "node scripts/test-gemini.js",
-    "test:ai": "npm run test:gemini",
+    "test:groq": "node scripts/test-groq.js",
+    "test:ai": "npm run test:groq",
     "setup:admin": "node scripts/setup-admin.js"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "bcryptjs": "^2.4.3",
     "crypto-js": "^4.2.0",
     "dotenv": "^17.2.1",
+    "groq-sdk": "^0.34.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
     "mongoose": "^8.0.0",

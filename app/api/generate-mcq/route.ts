@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateGroqContent } from '@/lib/groq';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import Test from '@/models/Test';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
 
 // Helper function to extract JSON from markdown code blocks
 function extractJsonFromMarkdown(text: string): string {
@@ -92,37 +90,34 @@ export async function POST(request: NextRequest) {
     Return ONLY valid JSON array:
     [{"question":"Question text?","options":["A","B","C","D"],"correctAnswer":"A"}]`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const systemPrompt = "You are an expert educator creating multiple choice questions. Always respond with valid JSON.";
     
-    const result = await model.generateContent([
-      "You are an expert educator creating multiple choice questions. Always respond with valid JSON.",
-      prompt
-    ]);
+    const responseText = await generateGroqContent(prompt, systemPrompt);
     
-    const content = result.response.text();
+    console.log('Raw AI response:', responseText);
     
-    if (!content) {
-      throw new Error('No response from Google Gemini');
+    if (!responseText) {
+      throw new Error('No response from Groq AI');
     }
 
     // Try to parse the JSON response
     let questions;
     try {
-      const cleanedContent = extractJsonFromMarkdown(content);
+      const cleanedContent = extractJsonFromMarkdown(responseText);
       const finalContent = cleanJsonString(cleanedContent);
       questions = JSON.parse(finalContent);
     } catch (parseError) {
       console.error('Error parsing MCQ questions:', parseError);
-      console.error('Raw content:', content);
-      console.error('Cleaned content:', extractJsonFromMarkdown(content));
-      console.error('Final content:', cleanJsonString(extractJsonFromMarkdown(content)));
+      console.error('Raw content:', responseText);
+      console.error('Cleaned content:', extractJsonFromMarkdown(responseText));
+      console.error('Final content:', cleanJsonString(extractJsonFromMarkdown(responseText)));
       
       // If parsing fails, try to extract JSON from the response
-      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      const jsonMatch = responseText.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
         questions = JSON.parse(jsonMatch[0]);
       } else {
-        throw new Error('Failed to parse Google Gemini response');
+        throw new Error('Failed to parse Groq AI response');
       }
     }
 
