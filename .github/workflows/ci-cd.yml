@@ -390,23 +390,20 @@ jobs:
           DEPLOYMENT_URL: ${{ secrets.DEPLOYMENT_URL }}
           DO_HOST: ${{ secrets.DO_HOST }}
         run: |
-          # Use DEPLOYMENT_URL if set, otherwise use DO_HOST
+          # Use DEPLOYMENT_URL if set, otherwise use DO_HOST with port
           if [ -n "$DEPLOYMENT_URL" ]; then
-            TARGET_URL="$DEPLOYMENT_URL"
+            # DEPLOYMENT_URL is a domain (likely with reverse proxy)
+            if [[ ! $DEPLOYMENT_URL =~ ^https?:// ]]; then
+              HEALTH_URL="https://${DEPLOYMENT_URL}/api/health"
+            else
+              HEALTH_URL="${DEPLOYMENT_URL}/api/health"
+            fi
+          elif [ -n "$DO_HOST" ]; then
+            # DO_HOST is an IP, need to add port
+            HEALTH_URL="http://${DO_HOST}:3005/api/health"
           else
-            TARGET_URL="$DO_HOST"
-          fi
-          
-          # Remove protocol if present and add http://
-          if [[ ! $TARGET_URL =~ ^https?:// ]]; then
-            TARGET_URL="http://$TARGET_URL"
-          fi
-          
-          # Remove port if already in URL
-          if [[ $TARGET_URL =~ :[0-9]+$ ]]; then
-            HEALTH_URL="${TARGET_URL}/api/health"
-          else
-            HEALTH_URL="${TARGET_URL}:3005/api/health"
+            echo "❌ Neither DEPLOYMENT_URL nor DO_HOST is set!"
+            exit 1
           fi
           
           echo "🏥 Checking health endpoint: ${HEALTH_URL}"
