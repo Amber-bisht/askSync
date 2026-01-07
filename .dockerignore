@@ -48,6 +48,8 @@ logs
 .cache
 .eslintcache
 *.tsbuildinfo
+.turbo
+.next/cache
 
 # Test files
 coverage
