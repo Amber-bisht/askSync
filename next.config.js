@@ -2,15 +2,7 @@
 const nextConfig = {
   // Enable standalone output for Docker optimization
   output: 'standalone',
-  
-  // Turbopack is now the default in Next.js 16, but we can configure it
-  experimental: {
-    // Enable Turbopack file system caching for faster rebuilds
-    turbo: {
-      // Turbopack configuration (optional, defaults are good)
-    },
-  },
-  
+
   env: {
     MONGODB_URI: process.env.MONGODB_URI,
     GROQ_API_KEY: process.env.GROQ_API_KEY,
