@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@headlessui/react": "^1.7.17",
+    "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.0.18",
     "autoprefixer": "^10.4.16",
     "bcryptjs": "^2.4.3",
