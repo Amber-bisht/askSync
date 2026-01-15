@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
-import { 
-  PlusIcon, 
-  TrashIcon, 
-  EyeIcon, 
+import {
+  PlusIcon,
+  TrashIcon,
+  EyeIcon,
   DocumentDuplicateIcon,
   ChevronUpIcon,
   ChevronDownIcon,
@@ -59,7 +59,7 @@ interface TestBuilderProps {
 
 export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
   const { data: session } = useSession();
-  console.log('TestBuilder received initialData:', initialData); // Debug log
+
   const [testName, setTestName] = useState(initialData?.testName || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [questions, setQuestions] = useState<TestQuestion[]>(initialData?.questions || []);
@@ -67,14 +67,14 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<number | null>(null);
-  
+
   // Access control state
   const [accessControl, setAccessControl] = useState({
     isPrivate: !(initialData?.isPublic ?? true),
     accessListId: (initialData as any)?.accessListId || (initialData as any)?.settings?.accessListId,
     allowedEmails: [] as string[]
   });
-  
+
   // Test settings
   const [settings, setSettings] = useState<TestSettings>({
     testName: initialData?.testName || '',
@@ -105,7 +105,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
         showResults: initialData.showResults ?? true,
         allowAnonymous: initialData.allowAnonymous ?? true,
       }));
-      
+
       // Update access control state
       setAccessControl({
         isPrivate: !initialData.isPublic,
@@ -146,7 +146,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
     accessListId?: string;
   }) => {
     console.log('Access control changed:', newAccessControl);
-    
+
     setAccessControl({
       isPrivate: newAccessControl.isPrivate,
       accessListId: newAccessControl.accessListId,
@@ -224,7 +224,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
         setQuestions(prev => [...prev, ...data.questions]);
         toast.success(`Generated ${data.questions.length} questions successfully!`);
@@ -296,7 +296,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
 
       if (response.ok) {
         toast.success(isEditing ? 'Test updated successfully!' : 'Test saved successfully!');
-        
+
         if (!isEditing) {
           // Reset form only for new tests
           setTestName('');
@@ -316,7 +316,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
             useSameReference: true
           });
         }
-        
+
         // Call onSave callback if provided (for edit mode)
         if (onSave) {
           onSave();
@@ -419,7 +419,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                   <input
                     type="number"
                     value={settings.timeLimit || ''}
-                    onChange={(e) => setSettings({...settings, timeLimit: parseInt(e.target.value) || undefined})}
+                    onChange={(e) => setSettings({ ...settings, timeLimit: parseInt(e.target.value) || undefined })}
                     placeholder="No time limit"
                     className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
@@ -438,7 +438,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                   <input
                     type="text"
                     value={settings.aiTopic}
-                    onChange={(e) => setSettings({...settings, aiTopic: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, aiTopic: e.target.value })}
                     placeholder="e.g., JavaScript Fundamentals"
                     className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
@@ -452,7 +452,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                     <input
                       type="number"
                       value={settings.mcqCount}
-                      onChange={(e) => setSettings({...settings, mcqCount: parseInt(e.target.value) || 0})}
+                      onChange={(e) => setSettings({ ...settings, mcqCount: parseInt(e.target.value) || 0 })}
                       min="0"
                       max="20"
                       className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
@@ -465,7 +465,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                     <input
                       type="number"
                       value={settings.qaCount}
-                      onChange={(e) => setSettings({...settings, qaCount: parseInt(e.target.value) || 0})}
+                      onChange={(e) => setSettings({ ...settings, qaCount: parseInt(e.target.value) || 0 })}
                       min="0"
                       max="10"
                       className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
@@ -479,7 +479,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                   </label>
                   <textarea
                     value={settings.aiReference}
-                    onChange={(e) => setSettings({...settings, aiReference: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, aiReference: e.target.value })}
                     placeholder="Add reference material for more accurate questions..."
                     rows={3}
                     className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
@@ -529,8 +529,8 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                     checked={settings.isPublic}
                     onChange={(e) => {
                       const isPublic = e.target.checked;
-                      setSettings({...settings, isPublic});
-                      setAccessControl(prev => ({...prev, isPrivate: !isPublic}));
+                      setSettings({ ...settings, isPublic });
+                      setAccessControl(prev => ({ ...prev, isPrivate: !isPublic }));
                     }}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
@@ -538,7 +538,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                     Public test (anyone with link can take)
                   </label>
                 </div>
-                
+
                 {!settings.isPublic && (
                   <div className="ml-6 border-l-2 border-gray-200 dark:border-gray-600 pl-4">
                     <AccessControlSettings
@@ -555,7 +555,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                     id="showResults"
                     checked={settings.showResults}
                     disabled={!canShowResults()}
-                    onChange={(e) => setSettings({...settings, showResults: e.target.checked})}
+                    onChange={(e) => setSettings({ ...settings, showResults: e.target.checked })}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
                   />
                   <label htmlFor="showResults" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
@@ -572,7 +572,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                     id="allowAnonymous"
                     checked={settings.allowAnonymous}
                     disabled={!canAllowAnonymous()}
-                    onChange={(e) => setSettings({...settings, allowAnonymous: e.target.checked})}
+                    onChange={(e) => setSettings({ ...settings, allowAnonymous: e.target.checked })}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
                   />
                   <label htmlFor="allowAnonymous" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
@@ -599,8 +599,8 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                   disabled={isSaving || !testName.trim() || questions.length === 0}
                   className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isSaving 
-                    ? (initialData?.isEditing ? 'Updating...' : 'Saving...') 
+                  {isSaving
+                    ? (initialData?.isEditing ? 'Updating...' : 'Saving...')
                     : (initialData?.isEditing ? 'Update Test' : 'Save Test')
                   }
                 </button>
@@ -705,7 +705,7 @@ function QuestionEditor({
           <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-1 rounded">{question.points} pts</span>
           {question.isRequired && <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2 py-1 rounded">Required</span>}
         </div>
-        
+
         <div className="flex items-center space-x-1">
           <button
             onClick={onMoveUp}
@@ -785,7 +785,7 @@ function QuestionEditor({
                 <PlusIcon className="h-4 w-4" />
                 <span>Add Option</span>
               </button>
-              
+
               {/* Correct Answer Selection */}
               <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Correct Answer</label>
@@ -849,12 +849,14 @@ function QuestionEditor({
 }
 
 // Test Preview Component
-function TestPreview({ test }: { test: { 
-  testName: string;
-  description: string;
-  timeLimit?: number;
-  questions: Array<{ question: string; type: string; options?: string[]; points: number; id?: string }> 
-} }) {
+function TestPreview({ test }: {
+  test: {
+    testName: string;
+    description: string;
+    timeLimit?: number;
+    questions: Array<{ question: string; type: string; options?: string[]; points: number; id?: string }>
+  }
+}) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
       <div className="mb-6">
@@ -886,9 +888,9 @@ function TestPreview({ test }: { test: {
               </h4>
               <span className="text-sm text-gray-500 dark:text-gray-400">{question.points} points</span>
             </div>
-            
+
             <div className="text-gray-700 dark:text-gray-300 mb-3">{question.question}</div>
-            
+
             {question.type === 'mcq' && question.options && (
               <div className="space-y-2 mb-3">
                 {question.options.map((option: string, optionIndex: number) => (
@@ -901,7 +903,7 @@ function TestPreview({ test }: { test: {
                 ))}
               </div>
             )}
-            
+
           </div>
         ))}
       </div>

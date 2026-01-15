@@ -27,7 +27,7 @@ export default function AuthPage() {
         console.log('Redirecting to dashboard');
         router.push('/dashboard');
       } else {
-        console.log('No session found');
+        console.log('No session found. If you just logged in, check NEXTAUTH_URL and NEXTAUTH_SECRET environment variables.');
       }
     };
     checkSession();
