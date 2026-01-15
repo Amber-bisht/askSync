@@ -37,24 +37,11 @@ export default function AuthPage() {
     console.log('Starting Google sign in...');
     setIsLoading(true);
     try {
-      const result = await signIn('google', {
-        callbackUrl: '/dashboard',
-        redirect: false
+      await signIn('google', {
+        callbackUrl: '/dashboard'
       });
-
-      console.log('Sign in result:', result);
-
-      if (result?.ok || result?.error === undefined) {
-        // Sign in was successful, redirect to main dashboard
-        console.log('Sign in successful, redirecting to main dashboard');
-        router.push('/dashboard');
-      } else if (result?.error) {
-        console.error('Sign in error:', result.error);
-        // You might want to show an error message to the user here
-      }
     } catch (error) {
       console.error('Google sign in error:', error);
-    } finally {
       setIsLoading(false);
     }
   };
