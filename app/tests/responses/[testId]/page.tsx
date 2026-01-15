@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
-import { 
-  ArrowLeftIcon, 
-  UserIcon, 
-  CalendarIcon, 
+import {
+  ArrowLeftIcon,
+  UserIcon,
+  CalendarIcon,
   CheckCircleIcon,
   XCircleIcon,
   DocumentTextIcon,
@@ -89,7 +89,7 @@ export default function TestResponsesPage() {
   const fetchTestAndResponses = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       // Fetch test details
       const testResponse = await fetch(`/api/tests/${testId}`);
       if (!testResponse.ok) {
@@ -133,7 +133,7 @@ export default function TestResponsesPage() {
 
   const handleAIGrading = async (responseId: string, questionId: string) => {
     if (!selectedResponse) return;
-    
+
     setGradingQuestion(questionId);
     try {
       const response = await fetch(`/api/tests/responses/${responseId}/grade-question`, {
@@ -148,7 +148,7 @@ export default function TestResponsesPage() {
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
         toast.success('Question graded successfully!');
         // Refresh the responses to show updated data
@@ -169,7 +169,7 @@ export default function TestResponsesPage() {
 
   const handleManualGrading = async (responseId: string, questionId: string, isCorrect: boolean) => {
     if (!selectedResponse) return;
-    
+
     try {
       const response = await fetch(`/api/tests/responses/${responseId}/manual-grade`, {
         method: 'POST',
@@ -183,7 +183,7 @@ export default function TestResponsesPage() {
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
         toast.success(`Marked as ${isCorrect ? 'correct' : 'incorrect'}`);
         // Refresh the responses to show updated data
@@ -203,7 +203,7 @@ export default function TestResponsesPage() {
       if (!response.ok) {
         throw new Error('Failed to export data');
       }
-      
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -214,7 +214,7 @@ export default function TestResponsesPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      
+
       toast.success('CSV exported successfully!');
     } catch (error) {
       console.error('Error exporting CSV:', error);
@@ -224,7 +224,7 @@ export default function TestResponsesPage() {
 
   const handleToggleResults = async () => {
     if (!test) return;
-    
+
     try {
       const response = await fetch(`/api/tests/${testId}`, {
         method: 'PATCH',
@@ -237,7 +237,7 @@ export default function TestResponsesPage() {
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
         toast.success(`Results ${!test.showResults ? 'published' : 'hidden'} successfully!`);
         // Refresh the test data
@@ -253,13 +253,13 @@ export default function TestResponsesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div key={i} className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-6">
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                   <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                 </div>
@@ -273,9 +273,9 @@ export default function TestResponsesPage() {
 
   if (!test) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Test Not Found</h1>
+          <h1 className="text-2xl font-bold text-white mb-4">Test Not Found</h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">The test you&apos;re looking for doesn&apos;t exist or you don&apos;t have permission to view it.</p>
           <button
             onClick={() => router.back()}
@@ -289,29 +289,29 @@ export default function TestResponsesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => router.back()}
-            className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors"
+            className="flex items-center text-gray-400 hover:text-white mb-4 transition-colors"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Back
           </button>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+
+          <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 className="text-3xl font-bold text-white mb-2">
                   {test.title}
                 </h1>
                 {test.description && (
                   <p className="text-gray-600 dark:text-gray-400 mb-4">{test.description}</p>
                 )}
-                
-                <div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400">
+
+                <div className="flex items-center space-x-6 text-sm text-gray-400">
                   <div className="flex items-center">
                     <DocumentTextIcon className="h-4 w-4 mr-1" />
                     {test.questions.length} questions
@@ -326,7 +326,7 @@ export default function TestResponsesPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3">
                 {/* Export CSV Button */}
                 <button
@@ -336,15 +336,14 @@ export default function TestResponsesPage() {
                   <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
                   Export CSV
                 </button>
-                
+
                 {/* Publish/Hide Results Button */}
                 <button
                   onClick={handleToggleResults}
-                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                    test.showResults
+                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${test.showResults
                       ? 'bg-red-600 hover:bg-red-700 text-white'
                       : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
+                    }`}
                 >
                   {test.showResults ? (
                     <>
@@ -360,13 +359,12 @@ export default function TestResponsesPage() {
                 </button>
               </div>
             </div>
-            
+
             {/* Results Status */}
-            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-              test.showResults
+            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${test.showResults
                 ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
-                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-            }`}>
+                : 'bg-neutral-800 text-gray-300'
+              }`}>
               {test.showResults ? (
                 <>
                   <EyeIcon className="h-4 w-4 mr-1" />
@@ -385,31 +383,30 @@ export default function TestResponsesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Responses List */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm">
+              <div className="p-6 border-b border-neutral-800">
+                <h2 className="text-xl font-semibold text-white">
                   Responses ({responses.length})
                 </h2>
               </div>
-              
+
               <div className="max-h-96 overflow-y-auto">
                 {responses.length === 0 ? (
                   <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                     No responses yet
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                  <div className="divide-y divide-neutral-800">
                     {responses.map((response) => (
                       <button
                         key={response._id}
                         onClick={() => setSelectedResponse(response)}
-                        className={`w-full p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                          selectedResponse?._id === response._id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-                        }`}
+                        className={`w-full p-4 text-left hover:bg-neutral-800 transition-colors ${selectedResponse?._id === response._id ? 'bg-blue-900/20' : ''
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-gray-900 dark:text-white">
+                            <div className="font-medium text-white">
                               {response.isAnonymous ? 'Anonymous' : response.submittedBy.name || 'Unknown'}
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -433,14 +430,14 @@ export default function TestResponsesPage() {
           {/* Response Details */}
           <div className="lg:col-span-2">
             {selectedResponse ? (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm">
+                <div className="p-6 border-b border-neutral-800">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      <h3 className="text-xl font-semibold text-white">
                         {selectedResponse.isAnonymous ? 'Anonymous Response' : selectedResponse.submittedBy.name || 'Unknown User'}
                       </h3>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      <div className="flex items-center space-x-4 text-sm text-gray-400 mt-1">
                         <div className="flex items-center">
                           <CalendarIcon className="h-4 w-4 mr-1" />
                           {formatDate(selectedResponse.submittedAt)}
@@ -459,9 +456,9 @@ export default function TestResponsesPage() {
                   <div className="space-y-6">
                     {selectedResponse.responses.map((response, index) => {
                       return (
-                        <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                        <div key={index} className="border border-neutral-800 rounded-lg p-4">
                           <div className="flex items-start justify-between mb-3">
-                            <h4 className="font-medium text-gray-900 dark:text-white">
+                            <h4 className="font-medium text-white">
                               Question {index + 1}
                             </h4>
                             <div className="flex items-center space-x-2">
@@ -472,9 +469,8 @@ export default function TestResponsesPage() {
                                   ) : (
                                     <XCircleIcon className="h-5 w-5 text-red-600 dark:text-red-400" />
                                   )}
-                                  <span className={`text-sm font-medium ${
-                                    response.isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                                  }`}>
+                                  <span className={`text-sm font-medium ${response.isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                                    }`}>
                                     {response.pointsEarned || 0}/{response.maxPoints || 0} pts
                                   </span>
                                 </>
@@ -483,12 +479,12 @@ export default function TestResponsesPage() {
                           </div>
 
                           <div className="mb-3">
-                            <p className="text-gray-700 dark:text-gray-300 mb-2">
+                            <p className="text-gray-300 mb-2">
                               {response.question}
                             </p>
-                            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Answer:</div>
-                              <div className="font-medium text-gray-900 dark:text-white">
+                            <div className="bg-neutral-800 rounded-lg p-3">
+                              <div className="text-sm text-gray-400 mb-1">Answer:</div>
+                              <div className="font-medium text-white">
                                 {response.answer}
                               </div>
                             </div>
@@ -517,7 +513,7 @@ export default function TestResponsesPage() {
                                     <XCircleIcon className="h-4 w-4 mr-1" />
                                     Wrong
                                   </button>
-                                  
+
                                   {/* AI Grading Button */}
                                   <button
                                     onClick={() => handleAIGrading(selectedResponse._id, response.questionId)}
@@ -543,7 +539,7 @@ export default function TestResponsesPage() {
 
                           {/* Note for MCQ questions */}
                           {response.questionType === 'mcq' && (
-                            <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div className="mt-4 p-3 bg-neutral-800 rounded-lg">
                               <div className="text-sm text-gray-600 dark:text-gray-400">
                                 <PencilIcon className="h-4 w-4 inline mr-1" />
                                 MCQ questions are automatically graded based on the selected option.
@@ -553,7 +549,7 @@ export default function TestResponsesPage() {
 
                           {response.aiFeedback && (
                             <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 mt-3">
-                              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">AI Feedback:</div>
+                              <div className="text-sm text-gray-400 mb-1">AI Feedback:</div>
                               <div className="text-purple-800 dark:text-purple-200">
                                 {response.aiFeedback}
                               </div>
@@ -566,9 +562,9 @@ export default function TestResponsesPage() {
                 </div>
               </div>
             ) : (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
+              <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-12 text-center">
                 <DocumentTextIcon className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                <h3 className="text-lg font-medium text-white mb-2">
                   Select a Response
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400">

@@ -5,9 +5,9 @@ import { useSession } from 'next-auth/react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import SiteHeader from '@/components/SiteHeader';
-import { 
-  ChartBarIcon, 
-  ArrowLeftIcon, 
+import {
+  ChartBarIcon,
+  ArrowLeftIcon,
   CalendarIcon,
   UserIcon,
   DocumentTextIcon,
@@ -110,7 +110,7 @@ export default function FormResponsesPage() {
           response.submittedBy?.name || 'Anonymous',
           response.submittedBy?.email || 'N/A'
         ];
-        
+
         // Add field values in the same order as headers
         form.fields.forEach(field => {
           const responseValue = response.responses.find(r => r.fieldId === field.id)?.value;
@@ -120,7 +120,7 @@ export default function FormResponsesPage() {
             row.push(`"${responseValue || ''}"`);
           }
         });
-        
+
         return row.join(',');
       })
     ].join('\n');
@@ -140,25 +140,25 @@ export default function FormResponsesPage() {
     if (Array.isArray(value)) {
       return value.join(', ');
     }
-    
+
     if (fieldType === 'rating') {
       return `${value}/5 ⭐`;
     }
-    
+
     if (fieldType === 'date') {
       return new Date(value as string).toLocaleDateString();
     }
-    
+
     return String(value);
   };
 
   if (!session?.user) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      <div className="min-h-screen bg-black transition-colors duration-200">
         <SiteHeader />
         <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
           <div className="text-center">
-            <p className="text-gray-600 dark:text-gray-300">Please sign in to view form responses.</p>
+            <p className="text-gray-400">Please sign in to view form responses.</p>
           </div>
         </div>
       </div>
@@ -167,12 +167,12 @@ export default function FormResponsesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      <div className="min-h-screen bg-black transition-colors duration-200">
         <SiteHeader />
         <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-300">Loading responses...</p>
+            <p className="mt-4 text-gray-400">Loading responses...</p>
           </div>
         </div>
       </div>
@@ -180,7 +180,7 @@ export default function FormResponsesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div className="min-h-screen bg-black transition-colors duration-200">
       <SiteHeader />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -189,35 +189,35 @@ export default function FormResponsesPage() {
             <div className="flex items-center space-x-4">
               <Link
                 href="/dashboard"
-                className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                className="flex items-center text-gray-400 hover:text-white transition-colors"
               >
                 <ArrowLeftIcon className="h-5 w-5 mr-1" />
                 Back to Forms
               </Link>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                <h1 className="text-3xl font-bold text-white">
                   {form?.title} - Responses
                 </h1>
-                <p className="text-gray-600 dark:text-gray-300">
+                <p className="text-gray-400">
                   {form?.responseCount} total responses
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <Link
                 href={`/form/${form?._id}`}
                 target="_blank"
-                className="flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center px-4 py-2 border border-neutral-700 rounded-lg text-gray-300 hover:bg-neutral-800 transition-colors"
               >
                 <EyeIcon className="h-4 w-4 mr-2" />
                 Preview Form
               </Link>
-              
+
               {responses.length > 0 && (
                 <button
                   onClick={exportData}
-                  className="flex items-center px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
+                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
                   <DocumentTextIcon className="h-4 w-4 mr-2" />
                   Export CSV
@@ -230,45 +230,45 @@ export default function FormResponsesPage() {
         {/* Stats Cards */}
         {form && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-colors">
+            <div className="bg-neutral-900 p-6 rounded-lg shadow-sm border border-neutral-800 transition-colors">
               <div className="flex items-center">
                 <ChartBarIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Responses</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{form.responseCount}</p>
+                  <p className="text-sm font-medium text-gray-400">Total Responses</p>
+                  <p className="text-2xl font-bold text-white">{form.responseCount}</p>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-colors">
+
+            <div className="bg-neutral-900 p-6 rounded-lg shadow-sm border border-neutral-800 transition-colors">
               <div className="flex items-center">
                 <UserIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Authenticated</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  <p className="text-sm font-medium text-gray-400">Authenticated</p>
+                  <p className="text-2xl font-bold text-white">
                     {responses.filter(r => !r.isAnonymous).length}
                   </p>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-colors">
+
+            <div className="bg-neutral-900 p-6 rounded-lg shadow-sm border border-neutral-800 transition-colors">
               <div className="flex items-center">
                 <DocumentTextIcon className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Fields</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{form.fields.length}</p>
+                  <p className="text-sm font-medium text-gray-400">Fields</p>
+                  <p className="text-2xl font-bold text-white">{form.fields.length}</p>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-colors">
+
+            <div className="bg-neutral-900 p-6 rounded-lg shadow-sm border border-neutral-800 transition-colors">
               <div className="flex items-center">
                 <CalendarIcon className="h-8 w-8 text-orange-600 dark:text-orange-400" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Latest Response</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                    {responses.length > 0 
+                  <p className="text-sm font-medium text-gray-400">Latest Response</p>
+                  <p className="text-sm font-bold text-white">
+                    {responses.length > 0
                       ? new Date(responses[0].submittedAt).toLocaleDateString()
                       : 'No responses'
                     }
@@ -281,17 +281,17 @@ export default function FormResponsesPage() {
 
         {/* Responses List */}
         {responses.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-12 text-center transition-colors">
+          <div className="bg-neutral-900 rounded-lg shadow-sm border border-neutral-800 p-12 text-center transition-colors">
             <DocumentTextIcon className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No responses yet</h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
+            <h3 className="text-lg font-medium text-white mb-2">No responses yet</h3>
+            <p className="text-gray-400 mb-6">
               Share your form to start collecting responses.
             </p>
             <div className="flex items-center justify-center space-x-4">
               <Link
                 href={`/form/${form?._id}`}
                 target="_blank"
-                className="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <ShareIcon className="h-4 w-4 mr-2" />
                 View Form
@@ -299,58 +299,58 @@ export default function FormResponsesPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors">
+          <div className="bg-neutral-900 rounded-lg shadow-sm border border-neutral-800 overflow-hidden transition-colors">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                <thead className="bg-gray-50 dark:bg-gray-700">
+              <table className="min-w-full divide-y divide-neutral-800">
+                <thead className="bg-neutral-800">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Submitted
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Submitter
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Preview
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
+                <tbody className="bg-neutral-900 divide-y divide-neutral-800">
                   {responses.map((response) => (
-                    <tr key={response._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <tr key={response._id} className="hover:bg-neutral-800 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <CalendarIcon className="h-4 w-4 text-gray-400 dark:text-gray-500 mr-2" />
                           <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            <div className="text-sm font-medium text-white">
                               {new Date(response.submittedAt).toLocaleDateString()}
                             </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                            <div className="text-sm text-gray-500">
                               {new Date(response.submittedAt).toLocaleTimeString()}
                             </div>
                           </div>
                         </div>
                       </td>
-                      
+
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <UserIcon className="h-4 w-4 text-gray-400 dark:text-gray-500 mr-2" />
                           <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            <div className="text-sm font-medium text-white">
                               {response.submittedBy?.name || 'Anonymous'}
                             </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                            <div className="text-sm text-gray-500">
                               {response.submittedBy?.email || 'No email'}
                             </div>
                           </div>
                         </div>
                       </td>
-                      
+
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 dark:text-gray-100 max-w-xs truncate">
+                        <div className="text-sm text-white max-w-xs truncate">
                           {response.responses.slice(0, 2).map((r, idx) => (
                             <div key={idx} className="mb-1">
                               <span className="font-medium">{r.fieldLabel}:</span>{' '}
@@ -362,11 +362,11 @@ export default function FormResponsesPage() {
                           )}
                         </div>
                       </td>
-                      
+
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
                           onClick={() => setSelectedResponse(response)}
-                          className="inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          className="inline-flex items-center px-3 py-1 border border-neutral-700 rounded-md text-sm text-gray-300 hover:bg-neutral-800 transition-colors"
                         >
                           <EyeIcon className="h-4 w-4 mr-1" />
                           View Details
@@ -380,7 +380,7 @@ export default function FormResponsesPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="bg-white dark:bg-gray-800 px-4 py-3 border-t border-gray-200 dark:border-gray-600 flex items-center justify-between transition-colors">
+              <div className="bg-neutral-900 px-4 py-3 border-t border-neutral-800 flex items-center justify-between transition-colors">
                 <div className="flex items-center">
                   <p className="text-sm text-gray-700 dark:text-gray-300">
                     Page {currentPage} of {totalPages}
@@ -410,10 +410,10 @@ export default function FormResponsesPage() {
         {/* Response Detail Modal */}
         {selectedResponse && (
           <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center p-4 z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 dark:border-gray-700 transition-colors">
+            <div className="bg-neutral-900 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-neutral-800 transition-colors">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Response Details</h3>
+                  <h3 className="text-lg font-semibold text-white">Response Details</h3>
                   <button
                     onClick={() => setSelectedResponse(null)}
                     className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -424,18 +424,18 @@ export default function FormResponsesPage() {
 
                 <div className="space-y-6">
                   {/* Submission Info */}
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Submission Information</h4>
+                  <div className="bg-neutral-800 p-4 rounded-lg border border-neutral-700">
+                    <h4 className="font-medium text-white mb-3">Submission Information</h4>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <span className="text-gray-600 dark:text-gray-300">Submitted:</span>
-                        <div className="font-medium text-gray-900 dark:text-gray-100">
+                        <span className="text-gray-400">Submitted:</span>
+                        <div className="font-medium text-white">
                           {new Date(selectedResponse.submittedAt).toLocaleString()}
                         </div>
                       </div>
                       <div>
-                        <span className="text-gray-600 dark:text-gray-300">Submitter:</span>
-                        <div className="font-medium text-gray-900 dark:text-gray-100">
+                        <span className="text-gray-400">Submitter:</span>
+                        <div className="font-medium text-white">
                           {selectedResponse.submittedBy?.name || 'Anonymous'}
                         </div>
                         {selectedResponse.submittedBy?.email && (
@@ -447,14 +447,14 @@ export default function FormResponsesPage() {
 
                   {/* Responses */}
                   <div>
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Responses</h4>
+                    <h4 className="font-medium text-white mb-3">Responses</h4>
                     <div className="space-y-4">
                       {selectedResponse.responses.map((response, index) => (
-                        <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
-                          <div className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                        <div key={index} className="border border-neutral-700 rounded-lg p-4 bg-neutral-900">
+                          <div className="font-medium text-white mb-2">
                             {response.fieldLabel}
                           </div>
-                          <div className="text-gray-700 dark:text-gray-300">
+                          <div className="text-gray-300">
                             {renderValue(response.value, form?.fields.find(f => f.id === response.fieldId)?.type || 'text')}
                           </div>
                         </div>
@@ -466,7 +466,7 @@ export default function FormResponsesPage() {
                 <div className="mt-6 flex justify-end">
                   <button
                     onClick={() => setSelectedResponse(null)}
-                    className="px-4 py-2 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                    className="px-4 py-2 bg-neutral-700 text-white rounded-lg hover:bg-neutral-600 transition-colors"
                   >
                     Close
                   </button>

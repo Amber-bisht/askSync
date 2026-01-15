@@ -3,9 +3,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
-import { 
-  PlusIcon, 
-  TrashIcon, 
+import {
+  PlusIcon,
+  TrashIcon,
   PencilIcon,
   DocumentArrowUpIcon,
   UsersIcon,
@@ -108,7 +108,7 @@ export default function AccessListManager() {
 
   if (!session?.user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <UsersIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Required</h1>
@@ -119,13 +119,13 @@ export default function AccessListManager() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className="min-h-screen bg-black py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Access Lists</h1>
+              <h1 className="text-3xl font-bold text-white">Access Lists</h1>
               <p className="mt-2 text-gray-600 dark:text-gray-400">
                 Manage user access for private forms and tests
               </p>
@@ -133,14 +133,14 @@ export default function AccessListManager() {
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setShowImportModal(true)}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="inline-flex items-center px-4 py-2 border border-neutral-700 rounded-lg text-gray-300 hover:bg-neutral-800 transition-colors"
               >
                 <DocumentArrowUpIcon className="h-5 w-5 mr-2" />
                 Import CSV
               </button>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors"
               >
                 <PlusIcon className="h-5 w-5 mr-2" />
                 Create List
@@ -176,19 +176,19 @@ export default function AccessListManager() {
             {accessLists.map((list) => (
               <div
                 key={list._id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow p-6"
+                className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm hover:border-neutral-700 transition-colors p-6"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-neutral-800 rounded-lg flex items-center justify-center">
                       <UsersIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900 dark:text-gray-100">{list.name}</h3>
+                      <h3 className="font-medium text-white">{list.name}</h3>
                       <p className="text-sm text-gray-500 dark:text-gray-400">{list.description}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => viewListDetails(list)}
@@ -230,11 +230,10 @@ export default function AccessListManager() {
 
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">Status</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      list.isActive 
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${list.isActive
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                    }`}>
+                      }`}>
                       {list.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
@@ -311,12 +310,12 @@ function CreateAccessListModal({ list, onClose, onSuccess }: {
   const addUser = () => {
     const email = emailInput.trim().toLowerCase();
     const name = nameInput.trim();
-    
+
     if (!email) {
       toast.error('Email is required');
       return;
     }
-    
+
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -338,7 +337,7 @@ function CreateAccessListModal({ list, onClose, onSuccess }: {
         accessCount: 0
       }]
     }));
-    
+
     setEmailInput('');
     setNameInput('');
     toast.success('User added successfully');
@@ -353,18 +352,18 @@ function CreateAccessListModal({ list, onClose, onSuccess }: {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       toast.error('List name is required');
       return;
     }
 
     setLoading(true);
-    
+
     try {
       const url = list ? `/api/access-lists/${list._id}` : '/api/access-lists';
       const method = list ? 'PUT' : 'POST';
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -394,10 +393,10 @@ function CreateAccessListModal({ list, onClose, onSuccess }: {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            <h2 className="text-xl font-semibold text-white">
               {list ? 'Edit Access List' : 'Create Access List'}
             </h2>
             <button
@@ -414,21 +413,21 @@ function CreateAccessListModal({ list, onClose, onSuccess }: {
             <div className="space-y-6">
               {/* Basic Info */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-400 mb-2">
                   List Name *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-neutral-800 text-white"
                   placeholder="Enter list name"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-400 mb-2">
                   Description
                 </label>
                 <textarea
@@ -442,7 +441,7 @@ function CreateAccessListModal({ list, onClose, onSuccess }: {
 
               {/* Add Users */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-400 mb-2">
                   Add Users
                 </label>
                 <div className="space-y-3">
@@ -475,7 +474,7 @@ function CreateAccessListModal({ list, onClose, onSuccess }: {
               {/* Users List */}
               {formData.users.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     Users ({formData.users.length})
                   </label>
                   <div className="border border-gray-300 dark:border-gray-600 rounded-lg max-h-60 overflow-y-auto">
@@ -548,7 +547,7 @@ function ImportCSVModal({ onClose, onSuccess }: {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     if (files[0]) {
       handleFile(files[0]);
@@ -576,7 +575,7 @@ function ImportCSVModal({ onClose, onSuccess }: {
     reader.onload = (e) => {
       const text = e.target?.result as string;
       const lines = text.split('\n').filter(line => line.trim());
-      
+
       if (lines.length === 0) {
         toast.error('CSV file is empty');
         return;
@@ -592,7 +591,7 @@ function ImportCSVModal({ onClose, onSuccess }: {
       }
 
       const users: Array<{ email: string; name: string }> = [];
-      
+
       for (let i = 1; i < lines.length; i++) {
         const values = lines[i].split(',').map(v => v.trim());
         const email = values[emailIndex]?.replace(/"/g, '').trim();
@@ -658,10 +657,10 @@ function ImportCSVModal({ onClose, onSuccess }: {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Import CSV</h2>
+            <h2 className="text-xl font-semibold text-white">Import CSV</h2>
             <button
               onClick={onClose}
               className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
@@ -680,8 +679,8 @@ function ImportCSVModal({ onClose, onSuccess }: {
                 Your CSV file should contain columns for email addresses and optionally names.
               </p>
               <p className="text-xs text-blue-600 dark:text-blue-400">
-                Example: email,name<br/>
-                john@example.com,John Doe<br/>
+                Example: email,name<br />
+                john@example.com,John Doe<br />
                 jane@example.com,Jane Smith
               </p>
             </div>
@@ -692,9 +691,8 @@ function ImportCSVModal({ onClose, onSuccess }: {
                 Upload CSV File
               </label>
               <div
-                className={`border-2 border-dashed rounded-lg p-6 text-center ${
-                  dragActive ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'
-                }`}
+                className={`border-2 border-dashed rounded-lg p-6 text-center ${dragActive ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'
+                  }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
                 onDragOver={handleDrag}
@@ -725,7 +723,7 @@ function ImportCSVModal({ onClose, onSuccess }: {
             {preview.length > 0 && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     List Name *
                   </label>
                   <input
@@ -739,7 +737,7 @@ function ImportCSVModal({ onClose, onSuccess }: {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     Description
                   </label>
                   <textarea
@@ -753,7 +751,7 @@ function ImportCSVModal({ onClose, onSuccess }: {
 
                 {/* Preview */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     Preview ({preview.length} users)
                   </label>
                   <div className="border border-gray-300 dark:border-gray-600 rounded-lg max-h-60 overflow-y-auto">
@@ -810,8 +808,8 @@ function ListDetailsModal({ list, onClose }: {
 
   const filteredUsers = useMemo(() => {
     if (!list.users) return [];
-    
-    const filtered = list.users.filter(user => 
+
+    const filtered = list.users.filter(user =>
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -842,11 +840,11 @@ function ListDetailsModal({ list, onClose }: {
       }
 
       if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return sortOrder === 'asc' 
+        return sortOrder === 'asc'
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue);
       } else {
-        return sortOrder === 'asc' 
+        return sortOrder === 'asc'
           ? (aValue as number) - (bValue as number)
           : (bValue as number) - (aValue as number);
       }
@@ -890,7 +888,7 @@ function ListDetailsModal({ list, onClose }: {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
-    
+
     toast.success('User list exported successfully');
   };
 
@@ -986,7 +984,7 @@ function ListDetailsModal({ list, onClose }: {
                 </h3>
               </div>
             </div>
-            
+
             {filteredUsers.length === 0 ? (
               <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 {searchTerm ? 'No users match your search.' : 'No users found in this list.'}
@@ -996,25 +994,25 @@ function ListDetailsModal({ list, onClose }: {
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
                     <tr>
-                      <th 
+                      <th
                         className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
                         onClick={() => handleSort('email')}
                       >
                         Email {sortBy === 'email' && (sortOrder === 'asc' ? '↑' : '↓')}
                       </th>
-                      <th 
+                      <th
                         className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
                         onClick={() => handleSort('name')}
                       >
                         Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
                       </th>
-                      <th 
+                      <th
                         className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
                         onClick={() => handleSort('accessCount')}
                       >
                         Access Count {sortBy === 'accessCount' && (sortOrder === 'asc' ? '↑' : '↓')}
                       </th>
-                      <th 
+                      <th
                         className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
                         onClick={() => handleSort('lastAccessed')}
                       >
@@ -1035,16 +1033,15 @@ function ListDetailsModal({ list, onClose }: {
                           {user.name || '-'}
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            user.accessCount > 0 
-                              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.accessCount > 0
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
                               : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                          }`}>
+                            }`}>
                             {user.accessCount}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                          {user.lastAccessedAt 
+                          {user.lastAccessedAt
                             ? new Date(user.lastAccessedAt).toLocaleDateString()
                             : 'Never'
                           }

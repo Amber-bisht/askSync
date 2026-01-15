@@ -3,18 +3,17 @@
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { AcademicCapIcon, UserIcon } from '@heroicons/react/24/outline';
-import ThemeToggle from './ThemeToggle';
 
 export default function SiteHeader() {
   const { data: session } = useSession();
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
+    <header className="bg-black shadow-sm border-b border-neutral-800 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-6">
           <div className="flex items-center">
-            <AcademicCapIcon className="h-8 w-8 text-primary-600 dark:text-primary-400" />
-            <Link href="/" className="ml-3 text-2xl font-bold text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+            <AcademicCapIcon className="h-8 w-8 text-white" />
+            <Link href="/" className="ml-3 text-2xl font-bold text-white hover:text-gray-300 transition-colors">
               AskSync
             </Link>
           </div>
@@ -22,7 +21,6 @@ export default function SiteHeader() {
             <Link href="/about-project" className="nav-link">
               About
             </Link>
-            <ThemeToggle />
             {session ? (
               <>
                 <Link href="/dashboard" className="nav-link">

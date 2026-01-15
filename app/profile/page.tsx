@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { 
-  UserIcon, 
-  EnvelopeIcon, 
-  CalendarIcon, 
+import {
+  UserIcon,
+  EnvelopeIcon,
+  CalendarIcon,
   PencilIcon,
   CheckIcon,
   XMarkIcon
@@ -49,7 +49,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (status === 'loading') return;
-    
+
     if (!session) {
       router.push('/auth');
       return;
@@ -132,31 +132,31 @@ export default function ProfilePage() {
   const getSubscriptionColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
+        return 'bg-green-900/30 text-green-300 border border-green-800';
       case 'expired':
         return 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
       case 'cancelled':
         return 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200';
       default:
-        return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200';
+        return 'bg-neutral-800 text-gray-300 border border-neutral-700';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-black">
       <SiteHeader />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           {/* Profile Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-neutral-800">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Personal Information</h2>
+                <h2 className="text-lg font-medium text-white">Personal Information</h2>
                 {!editing ? (
                   <button
                     onClick={() => setEditing(true)}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                    className="inline-flex items-center px-3 py-2 border border-neutral-700 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-300 bg-neutral-800 hover:bg-neutral-700"
                   >
                     <PencilIcon className="h-4 w-4 mr-2" />
                     Edit
@@ -172,7 +172,7 @@ export default function ProfilePage() {
                     </button>
                     <button
                       onClick={handleCancel}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                      className="inline-flex items-center px-3 py-2 border border-neutral-700 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-300 bg-neutral-800 hover:bg-neutral-700"
                     >
                       <XMarkIcon className="h-4 w-4 mr-2" />
                       Cancel
@@ -184,7 +184,7 @@ export default function ProfilePage() {
             <div className="px-6 py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     Full Name
                   </label>
                   {editing ? (
@@ -192,12 +192,12 @@ export default function ProfilePage() {
                       type="text"
                       value={editForm.name}
                       onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                      className="w-full px-3 py-2 border border-neutral-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-neutral-800 text-white"
                     />
                   ) : (
                     <div className="flex items-center">
                       <UserIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-3" />
-                      <span className="text-gray-900 dark:text-gray-100">{profile.name || 'Not provided'}</span>
+                      <span className="text-white">{profile.name || 'Not provided'}</span>
                     </div>
                   )}
                 </div>
@@ -208,7 +208,7 @@ export default function ProfilePage() {
                   </label>
                   <div className="flex items-center">
                     <EnvelopeIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-3" />
-                    <span className="text-gray-900 dark:text-gray-100">{profile.email}</span>
+                    <span className="text-white">{profile.email}</span>
                     <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">(Cannot be changed)</span>
                   </div>
                 </div>
@@ -220,7 +220,7 @@ export default function ProfilePage() {
                   </label>
                   <div className="flex items-center">
                     <CalendarIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-3" />
-                    <span className="text-gray-900 dark:text-gray-100">
+                    <span className="text-white">
                       {new Date(profile.createdAt).toLocaleDateString()}
                     </span>
                   </div>
@@ -231,9 +231,9 @@ export default function ProfilePage() {
 
           {/* Subscription Card */}
           {profile.subscription && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Subscription</h2>
+            <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm">
+              <div className="px-6 py-4 border-b border-neutral-800">
+                <h2 className="text-lg font-medium text-white">Subscription</h2>
               </div>
               <div className="px-6 py-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -241,7 +241,7 @@ export default function ProfilePage() {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Plan
                     </label>
-                    <span className="text-lg font-medium text-gray-900 dark:text-gray-100 capitalize">
+                    <span className="text-lg font-medium text-white capitalize">
                       {profile.subscription.plan}
                     </span>
                   </div>
@@ -258,7 +258,7 @@ export default function ProfilePage() {
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Expires
                       </label>
-                      <span className="text-gray-900 dark:text-gray-100">
+                      <span className="text-white">
                         {new Date(profile.subscription.expiresAt).toLocaleDateString()}
                       </span>
                     </div>

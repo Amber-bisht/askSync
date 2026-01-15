@@ -302,7 +302,7 @@ export default function DashboardPage() {
     if (userData) {
       return userData;
     }
-    
+
     // Fallback to session data but map old field names to new ones
     if (session?.user) {
       return {
@@ -318,14 +318,14 @@ export default function DashboardPage() {
         questionAiUsed: session.user.questionAiUsed || 0,
       };
     }
-    
+
     return null;
   };
 
   const getTestType = (questions: TestListItem['questions']) => {
     const hasMcq = questions.some(q => q.type === 'mcq');
     const hasQa = questions.some(q => q.type === 'qa');
-    
+
     if (hasMcq && hasQa) return 'mixed';
     if (hasMcq) return 'mcq';
     if (hasQa) return 'qa';
@@ -338,7 +338,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (status === 'loading') return;
-    
+
     if (!session) {
       router.push('/auth');
       return;
@@ -385,7 +385,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen bg-black transition-colors duration-300">
       {/* Site Header */}
       <SiteHeader />
 
@@ -393,17 +393,17 @@ export default function DashboardPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Title */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold text-white">
             Dashboard
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-gray-400 mt-2">
             Welcome back, {session?.user.name}! Manage your tests, forms, and access lists.
           </p>
         </div>
 
         {/* Main Tab Navigation */}
-        <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
-          <nav className="-mb-px flex space-x-8">
+        <div className="border-b border-neutral-800 mb-6 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <nav className="-mb-px flex space-x-8 min-w-max">
             {mainTabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -418,11 +418,10 @@ export default function DashboardPage() {
                       setActiveTestSubTab('create-tests');
                     }
                   }}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-                  }`}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${activeTab === tab.id
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
+                    }`}
                 >
                   <Icon className="h-5 w-5" />
                   <span>{tab.name}</span>
@@ -434,12 +433,12 @@ export default function DashboardPage() {
 
         {/* Sub Tab Navigation - For Forms and Tests */}
         {(activeTab === 'forms' || activeTab === 'tests') && (
-          <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
-            <nav className="-mb-px flex space-x-6">
+          <div className="border-b border-neutral-800 mb-8 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <nav className="-mb-px flex space-x-6 min-w-max">
               {(activeTab === 'forms' ? formSubTabs : testSubTabs).map((subTab) => {
                 const Icon = subTab.icon;
-                const isActive = activeTab === 'forms' 
-                  ? activeSubTab === subTab.id 
+                const isActive = activeTab === 'forms'
+                  ? activeSubTab === subTab.id
                   : activeTestSubTab === subTab.id;
                 return (
                   <button
@@ -451,11 +450,10 @@ export default function DashboardPage() {
                         setActiveTestSubTab(subTab.id as 'create-tests' | 'my-tests');
                       }
                     }}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
-                      isActive
-                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-                    }`}
+                    className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${isActive
+                      ? 'border-blue-500 text-blue-400'
+                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
+                      }`}
                   >
                     <Icon className="h-4 w-4" />
                     <span>{subTab.name}</span>
@@ -476,18 +474,18 @@ export default function DashboardPage() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create Tests</h2>
+                      <h2 className="text-2xl font-bold text-white">Create Tests</h2>
                       <p className="text-gray-600 dark:text-gray-400">Create custom tests with MCQ and Q&A questions</p>
                     </div>
                   </div>
 
                   {/* Test Creation Content */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+                  <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm">
                     {editingTest ? (
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-6">
                           <div>
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            <h3 className="text-lg font-semibold text-white">
                               Editing: {editingTest.testName}
                             </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -501,20 +499,20 @@ export default function DashboardPage() {
                             Cancel Edit
                           </button>
                         </div>
-                        <TestBuilder 
+                        <TestBuilder
                           initialData={(() => {
                             console.log('Passing to TestBuilder:', testData);
                             return testData ? {
-                            testName: testData.testName,
-                            description: testData.description || '',
-                            questions: testData.questions,
-                            timeLimit: testData.timeLimit,
-                            isPublic: testData.isPublic,
-                            showResults: testData.showResults,
-                            allowAnonymous: testData.allowAnonymous,
-                            isEditing: true,
-                            testId: testData._id
-                          } : undefined;
+                              testName: testData.testName,
+                              description: testData.description || '',
+                              questions: testData.questions,
+                              timeLimit: testData.timeLimit,
+                              isPublic: testData.isPublic,
+                              showResults: testData.showResults,
+                              allowAnonymous: testData.allowAnonymous,
+                              isEditing: true,
+                              testId: testData._id
+                            } : undefined;
                           })()}
                           onSave={handleTestSaved}
                         />
@@ -529,7 +527,7 @@ export default function DashboardPage() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Tests</h2>
+                      <h2 className="text-2xl font-bold text-white">My Tests</h2>
                       <p className="text-gray-600 dark:text-gray-400">Manage your created tests</p>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -546,7 +544,7 @@ export default function DashboardPage() {
                   {testsLoading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {[...Array(6)].map((_, i) => (
-                        <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 animate-pulse">
+                        <div key={i} className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-6 animate-pulse">
                           <div className="flex items-center space-x-3 mb-4">
                             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-lg"></div>
                             <div className="space-y-2">
@@ -564,7 +562,7 @@ export default function DashboardPage() {
                   ) : tests.length === 0 ? (
                     <div className="text-center py-12">
                       <ClipboardDocumentListIcon className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No tests yet</h3>
+                      <h3 className="text-lg font-medium text-white mb-2">No tests yet</h3>
                       <p className="text-gray-600 dark:text-gray-400 mb-6">Create your first test to get started</p>
                       <button
                         onClick={() => setActiveTestSubTab('create-tests')}
@@ -580,11 +578,11 @@ export default function DashboardPage() {
                         const testType = getTestType(test.questions);
                         const typeInfo = testTypeIcons[testType] || testTypeIcons.mixed;
                         const totalPoints = getTotalPoints(test.questions);
-                        
+
                         return (
                           <div
                             key={test._id}
-                            className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow p-6"
+                            className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm hover:border-neutral-700 transition-all p-6"
                           >
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center space-x-3">
@@ -592,11 +590,11 @@ export default function DashboardPage() {
                                   <span className="text-lg">{typeInfo.icon}</span>
                                 </div>
                                 <div>
-                                  <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">{test.testName}</h3>
+                                  <h3 className="font-medium text-white truncate">{test.testName}</h3>
                                   <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{testType}</p>
                                 </div>
                               </div>
-                              
+
                               <div className="flex items-center space-x-1">
                                 <button
                                   onClick={() => copyTestLink(test.testLink)}
@@ -625,29 +623,28 @@ export default function DashboardPage() {
                             <div className="space-y-2">
                               <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-500 dark:text-gray-400">Questions:</span>
-                                <span className="font-medium text-gray-900 dark:text-gray-100">{test.questions.length}</span>
+                                <span className="font-medium text-white">{test.questions.length}</span>
                               </div>
                               <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-500 dark:text-gray-400">Total Points:</span>
-                                <span className="font-medium text-gray-900 dark:text-gray-100">{totalPoints}</span>
+                                <span className="font-medium text-white">{totalPoints}</span>
                               </div>
                               <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-500 dark:text-gray-400">Responses:</span>
-                                <span className="font-medium text-gray-900 dark:text-gray-100">{test.responseCount}</span>
+                                <span className="font-medium text-white">{test.responseCount}</span>
                               </div>
                               {test.timeLimit && (
                                 <div className="flex items-center justify-between text-sm">
                                   <span className="text-gray-500 dark:text-gray-400">Time Limit:</span>
-                                  <span className="font-medium text-gray-900 dark:text-gray-100">{test.timeLimit} min</span>
+                                  <span className="font-medium text-white">{test.timeLimit} min</span>
                                 </div>
                               )}
                               <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-500 dark:text-gray-400">Status:</span>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  test.isActive 
-                                    ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300' 
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                                }`}>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${test.isActive
+                                  ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
+                                  : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+                                  }`}>
                                   {test.isActive ? 'Active' : 'Inactive'}
                                 </span>
                               </div>
@@ -686,18 +683,18 @@ export default function DashboardPage() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create Forms & Surveys</h2>
+                      <h2 className="text-2xl font-bold text-white">Create Forms & Surveys</h2>
                       <p className="text-gray-600 dark:text-gray-400">Create custom forms for feedback, inquiries, complaints, and surveys</p>
                     </div>
                   </div>
 
                   {/* Form Creation Content */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+                  <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm">
                     {editingForm ? (
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-6">
                           <div>
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            <h3 className="text-lg font-semibold text-white">
                               Editing: {editingForm.title}
                             </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -711,7 +708,7 @@ export default function DashboardPage() {
                             Cancel Edit
                           </button>
                         </div>
-                        <FormEditor 
+                        <FormEditor
                           initialForm={(() => {
                             console.log('Passing to FormEditor:', formData);
                             return formData ? {
@@ -750,7 +747,7 @@ export default function DashboardPage() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Forms & Surveys</h2>
+                      <h2 className="text-2xl font-bold text-white">My Forms & Surveys</h2>
                       <p className="text-gray-600 dark:text-gray-400">Manage your created forms and surveys</p>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -773,7 +770,7 @@ export default function DashboardPage() {
                   {formsLoading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {[...Array(6)].map((_, i) => (
-                        <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 animate-pulse">
+                        <div key={i} className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-6 animate-pulse">
                           <div className="flex items-center space-x-3 mb-4">
                             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-lg"></div>
                             <div className="space-y-2">
@@ -791,7 +788,7 @@ export default function DashboardPage() {
                   ) : forms.length === 0 ? (
                     <div className="text-center py-12">
                       <DocumentTextIcon className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No forms yet</h3>
+                      <h3 className="text-lg font-medium text-white mb-2">No forms yet</h3>
                       <p className="text-gray-600 dark:text-gray-400 mb-6">Create your first form to get started</p>
                       <a
                         href="#"
@@ -820,7 +817,7 @@ export default function DashboardPage() {
                                   <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{form.type}</p>
                                 </div>
                               </div>
-                              
+
                               <div className="flex items-center space-x-1">
                                 <button
                                   onClick={() => window.open(`/form/${form.formLink}`, '_blank')}
@@ -853,11 +850,10 @@ export default function DashboardPage() {
                               </div>
                               <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-500 dark:text-gray-400">Status:</span>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  form.isActive 
-                                    ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300' 
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                                }`}>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${form.isActive
+                                  ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
+                                  : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+                                  }`}>
                                   {form.isActive ? 'Active' : 'Inactive'}
                                 </span>
                               </div>
@@ -915,15 +911,14 @@ export default function DashboardPage() {
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Current Plan</h3>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    getCurrentUser()?.isPaid 
-                      ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300' 
-                      : 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300'
-                  }`}>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCurrentUser()?.isPaid
+                    ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
+                    : 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300'
+                    }`}>
                     {getCurrentUser()?.isPaid ? 'Paid Plan' : 'Free Plan'}
                   </span>
                 </div>
-                
+
                 {getCurrentUser()?.isPaid && getCurrentUser()?.subscriptionEndDate && (
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Subscription valid until: {new Date(getCurrentUser()!.subscriptionEndDate).toLocaleDateString()}
@@ -934,7 +929,7 @@ export default function DashboardPage() {
               {/* Usage Limits Display */}
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Usage Limits</h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Tests */}
                   <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
@@ -949,10 +944,10 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
-                      <div 
-                        className="bg-blue-600 h-2 rounded-full" 
-                        style={{ 
-                          width: `${Math.min(100, (Number(getCurrentUser()?.testsCreated || 0) / Number(getCurrentUser()?.testsLimit || 5)) * 100)}%` 
+                      <div
+                        className="bg-blue-600 h-2 rounded-full"
+                        style={{
+                          width: `${Math.min(100, (Number(getCurrentUser()?.testsCreated || 0) / Number(getCurrentUser()?.testsLimit || 5)) * 100)}%`
                         }}
                       ></div>
                     </div>
@@ -971,10 +966,10 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
-                      <div 
-                        className="bg-green-600 h-2 rounded-full" 
-                        style={{ 
-                          width: `${Math.min(100, (Number(getCurrentUser()?.formsCreated || 0) / Number(getCurrentUser()?.formsLimit || 5)) * 100)}%` 
+                      <div
+                        className="bg-green-600 h-2 rounded-full"
+                        style={{
+                          width: `${Math.min(100, (Number(getCurrentUser()?.formsCreated || 0) / Number(getCurrentUser()?.formsLimit || 5)) * 100)}%`
                         }}
                       ></div>
                     </div>
@@ -993,10 +988,10 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
-                      <div 
-                        className="bg-purple-600 h-2 rounded-full" 
-                        style={{ 
-                          width: `${Math.min(100, (Number(getCurrentUser()?.aiGradingUsed || 0) / Number(getCurrentUser()?.aiGradingLimit || 2)) * 100)}%` 
+                      <div
+                        className="bg-purple-600 h-2 rounded-full"
+                        style={{
+                          width: `${Math.min(100, (Number(getCurrentUser()?.aiGradingUsed || 0) / Number(getCurrentUser()?.aiGradingLimit || 2)) * 100)}%`
                         }}
                       ></div>
                     </div>
@@ -1015,10 +1010,10 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
-                      <div 
-                        className="bg-orange-600 h-2 rounded-full" 
-                        style={{ 
-                          width: `${Math.min(100, (Number(getCurrentUser()?.mcqAiUsed || 0) / Number(getCurrentUser()?.mcqAiLimit || 10)) * 100)}%` 
+                      <div
+                        className="bg-orange-600 h-2 rounded-full"
+                        style={{
+                          width: `${Math.min(100, (Number(getCurrentUser()?.mcqAiUsed || 0) / Number(getCurrentUser()?.mcqAiLimit || 10)) * 100)}%`
                         }}
                       ></div>
                     </div>
@@ -1037,10 +1032,10 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
-                      <div 
-                        className="bg-indigo-600 h-2 rounded-full" 
-                        style={{ 
-                          width: `${Math.min(100, (Number(getCurrentUser()?.questionAiUsed || 0) / Number(getCurrentUser()?.questionAiLimit || 10)) * 100)}%` 
+                      <div
+                        className="bg-indigo-600 h-2 rounded-full"
+                        style={{
+                          width: `${Math.min(100, (Number(getCurrentUser()?.questionAiUsed || 0) / Number(getCurrentUser()?.questionAiLimit || 10)) * 100)}%`
                         }}
                       ></div>
                     </div>
@@ -1059,10 +1054,10 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
-                      <div 
-                        className="bg-teal-600 h-2 rounded-full" 
-                        style={{ 
-                          width: `${Math.min(100, (Number(getCurrentUser()?.accessListsCreated || 0) / Number(getCurrentUser()?.accessListsLimit || 1)) * 100)}%` 
+                      <div
+                        className="bg-teal-600 h-2 rounded-full"
+                        style={{
+                          width: `${Math.min(100, (Number(getCurrentUser()?.accessListsCreated || 0) / Number(getCurrentUser()?.accessListsLimit || 1)) * 100)}%`
                         }}
                       ></div>
                     </div>

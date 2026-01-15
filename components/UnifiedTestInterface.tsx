@@ -35,7 +35,7 @@ export default function UnifiedTestInterface() {
   const params = useParams();
   const { data: session, status } = useSession();
   const testLink = params.testLink as string;
-  
+
   const [test, setTest] = useState<Test | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -84,7 +84,7 @@ export default function UnifiedTestInterface() {
 
   const fetchTestStatus = useCallback(async () => {
     if (!session?.user?.email) return;
-    
+
     try {
       const response = await fetch(`/api/tests/public/${testLink}/status`);
       const data = await response.json();
@@ -110,12 +110,12 @@ export default function UnifiedTestInterface() {
       signIn('google', { callbackUrl: window.location.href });
       return;
     }
-    
+
     if (testStatus?.hasAttempted) {
       toast.error('You have already attempted this test');
       return;
     }
-    
+
     setTestStarted(true);
     if (test?.timeLimit) {
       setTimeRemaining(test.timeLimit * 60); // Convert to seconds
@@ -217,10 +217,10 @@ export default function UnifiedTestInterface() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading test...</p>
+          <p className="text-gray-400">Loading test...</p>
         </div>
       </div>
     );
@@ -228,10 +228,10 @@ export default function UnifiedTestInterface() {
 
   if (!test) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Test Not Found</h1>
-          <p className="text-gray-600 dark:text-gray-400">The test you&apos;re looking for doesn&apos;t exist or has been removed.</p>
+          <h1 className="text-2xl font-bold text-white mb-4">Test Not Found</h1>
+          <p className="text-gray-400">The test you&apos;re looking for doesn&apos;t exist or has been removed.</p>
         </div>
       </div>
     );
@@ -240,22 +240,22 @@ export default function UnifiedTestInterface() {
   // Show start test screen if not started yet
   if (!testStarted) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="max-w-2xl w-full">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-8 text-center">
             <div className="text-6xl mb-6">📝</div>
-            <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            <h1 className="text-3xl font-bold mb-4 text-white">
               {test.testName}
             </h1>
             {test.description && (
-              <p className="text-lg mb-6 text-gray-600 dark:text-gray-400">
+              <p className="text-lg mb-6 text-gray-400">
                 {test.description}
               </p>
             )}
-            
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-8 text-left">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Test Information:</h3>
-              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+
+            <div className="bg-neutral-800 rounded-lg p-6 mb-8 text-left">
+              <h3 className="font-semibold text-white mb-4">Test Information:</h3>
+              <div className="space-y-2 text-sm text-gray-400">
                 <div className="flex justify-between">
                   <span>Questions:</span>
                   <span className="font-medium">{test.questions.length}</span>
@@ -280,7 +280,7 @@ export default function UnifiedTestInterface() {
             {status === 'loading' ? (
               <div className="flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span className="ml-2 text-gray-600 dark:text-gray-400">Loading...</span>
+                <span className="ml-2 text-gray-400">Loading...</span>
               </div>
             ) : session ? (
               <div className="space-y-4">
@@ -288,7 +288,7 @@ export default function UnifiedTestInterface() {
                   <UserIcon className="h-5 w-5" />
                   <span className="font-medium">Logged in as: {session.user?.name}</span>
                 </div>
-                
+
                 {testStatus?.hasSubmitted ? (
                   <div className="space-y-4">
                     <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -319,7 +319,7 @@ export default function UnifiedTestInterface() {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="text-gray-600 dark:text-gray-400">
+                <div className="text-gray-400">
                   You need to be logged in to take this test.
                 </div>
                 <button
@@ -339,20 +339,20 @@ export default function UnifiedTestInterface() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="max-w-4xl w-full">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-8 text-center">
             <div className="text-6xl mb-4">✅</div>
-            <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            <h1 className="text-3xl font-bold mb-4 text-white">
               Test Submitted Successfully!
             </h1>
-            <p className="text-lg mb-6 text-gray-600 dark:text-gray-400">
+            <p className="text-lg mb-6 text-gray-400">
               Thank you for completing the test.
             </p>
-            
+
             {test.settings.showResults && submissionResult && (
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-6 text-left">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Your Results</h3>
+              <div className="bg-neutral-800 rounded-lg p-6 mb-6 text-left">
+                <h3 className="text-lg font-semibold mb-4 text-white">Your Results</h3>
                 <div className="grid grid-cols-2 gap-4 text-center mb-6">
                   <div>
                     <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{submissionResult.totalScore || 0}</div>
@@ -404,12 +404,12 @@ export default function UnifiedTestInterface() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="min-h-screen bg-black p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-6">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-8 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-3xl font-bold text-white">
               {test.testName}
             </h1>
             {timeRemaining !== null && (
@@ -420,11 +420,11 @@ export default function UnifiedTestInterface() {
             )}
           </div>
           {test.description && (
-            <p className="text-lg text-gray-600 dark:text-gray-400">
+            <p className="text-lg text-gray-400">
               {test.description}
             </p>
           )}
-          <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+          <div className="mt-4 text-sm text-gray-400">
             {test.questions.length} questions • {test.questions.reduce((sum, q) => sum + q.points, 0)} total points
           </div>
         </div>
@@ -432,12 +432,12 @@ export default function UnifiedTestInterface() {
         {/* Test Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {test.questions.map((question, index) => (
-            <div key={question.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div key={question.id} className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-6">
               <div className="mb-4">
-                <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                <h3 className="text-lg font-semibold mb-2 text-white">
                   {index + 1}. {question.question}
                   {question.isRequired && <span className="text-red-500 ml-1">*</span>}
-                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">({question.points} point{question.points !== 1 ? 's' : ''})</span>
+                  <span className="text-sm text-gray-400 ml-2">({question.points} point{question.points !== 1 ? 's' : ''})</span>
                 </h3>
               </div>
 
@@ -446,11 +446,10 @@ export default function UnifiedTestInterface() {
                   {question.options.map((option, optionIndex) => (
                     <label
                       key={optionIndex}
-                      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                        answers[question.id] === option
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                      }`}
+                      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${answers[question.id] === option
+                        ? 'border-blue-500 bg-blue-900/20'
+                        : 'border-neutral-700 hover:border-neutral-500'
+                        }`}
                     >
                       <input
                         type="radio"
@@ -460,10 +459,10 @@ export default function UnifiedTestInterface() {
                         onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                         className="mr-3 text-blue-600"
                       />
-                      <span className="font-medium text-gray-600 dark:text-gray-400 mr-2">
+                      <span className="font-medium text-gray-400 mr-2">
                         {String.fromCharCode(65 + optionIndex)}.
                       </span>
-                      <span className="text-gray-900 dark:text-gray-100">{option}</span>
+                      <span className="text-white">{option}</span>
                     </label>
                   ))}
                 </div>
@@ -474,7 +473,7 @@ export default function UnifiedTestInterface() {
                   value={answers[question.id] || ''}
                   onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                   placeholder="Enter your answer..."
-                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full p-3 border border-neutral-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-neutral-800 text-white"
                   rows={4}
                 />
               )}
@@ -482,7 +481,7 @@ export default function UnifiedTestInterface() {
           ))}
 
           {/* Submit Button */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-6">
             <button
               type="submit"
               disabled={isSubmitting}
