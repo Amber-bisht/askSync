@@ -40,14 +40,14 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             {session ? (
               <>
-                <Link href="/dashboard" className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-black bg-white rounded-xl shadow-lg hover:bg-gray-200 transform hover:-translate-y-1 transition-all duration-300">
+                <Link href="/dashboard" className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-neutral-900 border border-neutral-800 rounded-xl shadow-lg hover:bg-neutral-800 transform hover:-translate-y-1 transition-all duration-300">
                   <span>Dashboard</span>
                   <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
               </>
             ) : (
               <>
-                <Link href="/auth" className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-black bg-white rounded-xl shadow-lg hover:bg-gray-200 transform hover:-translate-y-1 transition-all duration-300">
+                <Link href="/auth" className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-neutral-900 border border-neutral-800 rounded-xl shadow-lg hover:bg-neutral-800 transform hover:-translate-y-1 transition-all duration-300">
                   <span>Get Started</span>
                   <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>

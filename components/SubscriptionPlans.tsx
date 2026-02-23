@@ -65,13 +65,14 @@ export default function SubscriptionPlans() {
 
   const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
     if (!session) return;
-    
-    // Prevent subscription flow for already paid users
-    if (session.user.isPaid) {
-      alert('You already have an active subscription!');
+
+    // Prevent subscription flow for already paid users unless they are close to expiry
+    const daysUntilExpiry = getDaysUntilExpiry();
+    if (session.user.isPaid && daysUntilExpiry !== null && daysUntilExpiry > 3) {
+      alert(`You already have an active subscription! It will expire in ${daysUntilExpiry} days. You can renew when you have 3 or fewer days remaining.`);
       return;
     }
-    
+
     setIsLoading(true);
     try {
       // Create payment order
@@ -158,14 +159,14 @@ export default function SubscriptionPlans() {
   const daysUntilExpiry = getDaysUntilExpiry();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-6">
       <div className="text-center mb-8">
         <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           {session?.user?.isPaid ? 'Manage Your Subscription' : 'Choose Your Plan'}
         </h3>
         <p className="text-gray-600 dark:text-gray-400">
-          {session?.user?.isPaid 
-            ? 'Your current plan details and renewal options' 
+          {session?.user?.isPaid
+            ? 'Your current plan details and renewal options'
             : 'Unlock unlimited MCQ generation and advanced features'
           }
         </p>
@@ -173,24 +174,22 @@ export default function SubscriptionPlans() {
 
       {/* Plan Toggle */}
       <div className="flex justify-center mb-8">
-        <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+        <div className="bg-neutral-800 rounded-lg p-1">
           <button
             onClick={() => setSelectedPlan('monthly')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              selectedPlan === 'monthly'
-                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-            }`}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${selectedPlan === 'monthly'
+              ? 'bg-neutral-700 text-white shadow-sm'
+              : 'text-gray-400 hover:text-gray-200'
+              }`}
           >
             Monthly
           </button>
           <button
             onClick={() => setSelectedPlan('yearly')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              selectedPlan === 'yearly'
-                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-            }`}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${selectedPlan === 'yearly'
+              ? 'bg-neutral-700 text-white shadow-sm'
+              : 'text-gray-400 hover:text-gray-200'
+              }`}
           >
             Yearly
             <span className="ml-1 text-xs bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 px-2 py-1 rounded-full">
@@ -204,12 +203,11 @@ export default function SubscriptionPlans() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {plans.map((plan) => (
           <div
-            key={plan.value}
-            className={`relative rounded-lg border-2 p-6 ${
-              plan.popular
-                ? 'border-primary-500 dark:border-primary-400 bg-primary-50 dark:bg-gray-800'
-                : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800'
-            }`}
+            key={plan.name}
+            className={`relative rounded-lg border-2 p-6 ${plan.popular
+              ? 'border-blue-500 bg-blue-900/10'
+              : 'border-neutral-800 bg-black'
+              }`}
           >
             {plan.popular && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -243,18 +241,17 @@ export default function SubscriptionPlans() {
             <div className="relative group">
               <button
                 onClick={() => handleSubscribe(plan.value as 'monthly' | 'yearly')}
-                disabled={isLoading || session?.user?.isPaid}
-                className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
-                  session?.user?.isPaid
-                    ? 'bg-gray-400 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed'
-                    : plan.popular
-                    ? 'bg-primary-600 dark:bg-primary-500 text-white hover:bg-primary-700 dark:hover:bg-primary-600'
-                    : 'bg-gray-600 dark:bg-gray-500 text-white hover:bg-gray-700 dark:hover:bg-gray-600'
-                } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isLoading || (session?.user?.isPaid && (getDaysUntilExpiry() ?? 0) > 3)}
+                className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${session?.user?.isPaid && (getDaysUntilExpiry() ?? 0) > 3
+                  ? 'bg-neutral-800 text-gray-500 cursor-not-allowed'
+                  : plan.popular
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-neutral-700 text-white hover:bg-neutral-600'
+                  } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {isLoading ? 'Processing...' : (session?.user?.isPaid ? 'Already Subscribed' : 'Subscribe Now')}
+                {isLoading ? 'Processing...' : (session?.user?.isPaid && (getDaysUntilExpiry() ?? 0) > 3 ? 'Already Subscribed' : session?.user?.isPaid ? 'Renew Now' : 'Subscribe Now')}
               </button>
-              
+
               {/* Hover tooltip for paid users */}
               {session?.user?.isPaid && (
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
@@ -271,88 +268,94 @@ export default function SubscriptionPlans() {
       </div>
 
       {/* Current Subscription Status */}
-      {session.user.isPaid && (
-        <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <CheckIcon className="h-5 w-5 text-green-600 dark:text-green-400 mr-2" />
-              <span className="text-green-800 dark:text-green-300 font-medium">
-                You have an active subscription! 🎉
-              </span>
-            </div>
-            {daysUntilExpiry !== null && (
-              <div className="text-right">
-                <p className="text-sm text-green-700 dark:text-green-300">
-                  {daysUntilExpiry > 0 ? (
-                    <>Expires in <span className="font-semibold">{daysUntilExpiry} days</span></>
-                  ) : daysUntilExpiry === 0 ? (
-                    <span className="font-semibold text-orange-600 dark:text-orange-400">Expires today!</span>
-                  ) : (
-                    <span className="font-semibold text-red-600 dark:text-red-400">Expired</span>
-                  )}
-                </p>
-                {session.user.subscriptionEndDate && (
-                  <p className="text-xs text-green-600 dark:text-green-400">
-                    Until {new Date(session.user.subscriptionEndDate).toLocaleDateString()}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Trial Status */}
-      {!session.user.isPaid && session.user.isTrialUsed && (
-        <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-          <div className="flex items-center">
-            <StarIcon className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mr-2" />
-            <span className="text-yellow-800 dark:text-yellow-300">
-              Your free trial has been used. Subscribe to continue using premium features.
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Free Usage Status */}
-        {!session.user.isPaid && (
-        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <div className="space-y-2">
+      {
+        session.user.isPaid && (
+          <div className="mt-6 p-4 bg-green-900/10 border border-green-900/30 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <StarIcon className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
-                <span className="text-blue-800 dark:text-blue-300 font-medium">Free Plan Usage:</span>
+                <CheckIcon className="h-5 w-5 text-green-600 dark:text-green-400 mr-2" />
+                <span className="text-green-800 dark:text-green-300 font-medium">
+                  You have an active subscription! 🎉
+                </span>
               </div>
+              {daysUntilExpiry !== null && (
+                <div className="text-right">
+                  <p className="text-sm text-green-700 dark:text-green-300">
+                    {daysUntilExpiry > 0 ? (
+                      <>Expires in <span className="font-semibold">{daysUntilExpiry} days</span></>
+                    ) : daysUntilExpiry === 0 ? (
+                      <span className="font-semibold text-orange-600 dark:text-orange-400">Expires today!</span>
+                    ) : (
+                      <span className="font-semibold text-red-600 dark:text-red-400">Expired</span>
+                    )}
+                  </p>
+                  {session.user.subscriptionEndDate && (
+                    <p className="text-xs text-green-600 dark:text-green-400">
+                      Until {new Date(session.user.subscriptionEndDate).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex justify-between">
-                <span className="text-blue-700 dark:text-blue-300">Tests:</span>
-                <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.testsCreated || 0}/{session.user.testsLimit || 5}</span>
+          </div>
+        )
+      }
+
+      {/* Trial Status */}
+      {
+        !session.user.isPaid && session.user.isTrialUsed && (
+          <div className="mt-6 p-4 bg-yellow-900/10 border border-yellow-900/30 rounded-lg">
+            <div className="flex items-center">
+              <StarIcon className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mr-2" />
+              <span className="text-yellow-800 dark:text-yellow-300">
+                Your free trial has been used. Subscribe to continue using premium features.
+              </span>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Free Usage Status */}
+      {
+        !session.user.isPaid && (
+          <div className="mt-6 p-4 bg-blue-900/10 border border-blue-900/30 rounded-lg">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <StarIcon className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
+                  <span className="text-blue-800 dark:text-blue-300 font-medium">Free Plan Usage:</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-blue-700 dark:text-blue-300">Forms:</span>
-                <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.formsCreated || 0}/{session.user.formsLimit || 5}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-blue-700 dark:text-blue-300">AI Grading:</span>
-                <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.aiGradingUsed || 0}/{session.user.aiGradingLimit || 2}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-blue-700 dark:text-blue-300">MCQ Gen:</span>
-                <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.mcqAiUsed || 0}/{session.user.mcqAiLimit || 10}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-blue-700 dark:text-blue-300">Q&A Gen:</span>
-                <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.questionAiUsed || 0}/{session.user.questionAiLimit || 10}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-blue-700 dark:text-blue-300">Access Lists:</span>
-                <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.accessListsCreated || 0}/{session.user.accessListsLimit || 1}</span>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-blue-700 dark:text-blue-300">Tests:</span>
+                  <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.testsCreated || 0}/{session.user.testsLimit || 5}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-blue-700 dark:text-blue-300">Forms:</span>
+                  <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.formsCreated || 0}/{session.user.formsLimit || 5}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-blue-700 dark:text-blue-300">AI Grading:</span>
+                  <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.aiGradingUsed || 0}/{session.user.aiGradingLimit || 2}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-blue-700 dark:text-blue-300">MCQ Gen:</span>
+                  <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.mcqAiUsed || 0}/{session.user.mcqAiLimit || 10}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-blue-700 dark:text-blue-300">Q&A Gen:</span>
+                  <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.questionAiUsed || 0}/{session.user.questionAiLimit || 10}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-blue-700 dark:text-blue-300">Access Lists:</span>
+                  <span className="text-blue-800 dark:text-blue-200 font-medium">{session.user.accessListsCreated || 0}/{session.user.accessListsLimit || 1}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 }

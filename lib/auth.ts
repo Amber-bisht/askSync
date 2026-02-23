@@ -24,14 +24,14 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       console.log('SignIn callback triggered:', { user: user.email, provider: account?.provider });
-      
+
       if (account?.provider === 'google') {
         try {
           await connectDB();
-          
+
           // Check if user exists
           const existingUser = await User.findOne({ email: user.email });
-          
+
           if (existingUser) {
             console.log('Existing user found:', existingUser.email);
             // Update last login
@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        
+
         // Fetch user data from database
         try {
           await connectDB();
@@ -99,22 +99,37 @@ export const authOptions: NextAuthOptions = {
             token.questionAiLimit = dbUser.questionAiLimit;
             // Expiry date
             token.expiryDate = dbUser.expiryDate;
+
+            // Check and update expiry status
+            const updated = await dbUser.checkAndUpdateExpiry();
+            if (updated) {
+              console.log('JWT callback - dbUser expired, status updated');
+              token.isPaid = false;
+              token.expiryDate = undefined;
+              token.subscriptionEndDate = undefined;
+              token.testsLimit = 5;
+              token.formsLimit = 5;
+              token.accessListsLimit = 1;
+              token.aiGradingLimit = 2;
+              token.mcqAiLimit = 10;
+              token.questionAiLimit = 10;
+            }
           }
         } catch (error) {
           console.error('Error fetching user data:', error);
         }
       }
-      
-      
+
+
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        console.log('Session callback - token data:', { 
-          email: token.email, 
-          userId: token.userId 
+        console.log('Session callback - token data:', {
+          email: token.email,
+          userId: token.userId
         });
-        
+
         session.user.id = token.userId as string || token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string;

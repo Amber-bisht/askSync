@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
-import { 
-  SparklesIcon, 
-  ArrowPathIcon, 
+import {
+  SparklesIcon,
+  ArrowPathIcon,
   PlusIcon,
   PhotoIcon,
   XMarkIcon,
@@ -29,16 +29,16 @@ interface QuestionGeneratorProps {
   initialQuestions?: Question[];
 }
 
-export default function QuestionGenerator({ 
-  onQuestionsGenerated, 
-  initialQuestions = [] 
+export default function QuestionGenerator({
+  onQuestionsGenerated,
+  initialQuestions = []
 }: QuestionGeneratorProps) {
   const { data: session } = useSession();
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showGenerator, setShowGenerator] = useState(false);
   const [generationMode, setGenerationMode] = useState<'ai' | 'manual'>('ai');
-  
+
   // AI Generation form
   const [aiFormData, setAiFormData] = useState({
     topic: '',
@@ -66,8 +66,8 @@ export default function QuestionGenerator({
     const { name, value, type } = e.target;
     setAiFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : 
-              name === 'numQuestions' ? parseInt(value) : value
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked :
+        name === 'numQuestions' ? parseInt(value) : value
     }));
   };
 
@@ -122,14 +122,14 @@ export default function QuestionGenerator({
         id: generateId(),
         hasImage: !!q.imageUrl
       }));
-      
+
       setQuestions(prev => {
         const newQuestions = [...prev, ...generatedQuestions];
         onQuestionsGenerated(newQuestions);
         return newQuestions;
       });
       toast.success(`Generated ${generatedQuestions.length} questions successfully!`);
-      
+
     } catch (error) {
       console.error('Error generating questions:', error);
       toast.error('Failed to generate questions. Please try again.');
@@ -152,7 +152,7 @@ export default function QuestionGenerator({
 
     if (editingQuestion !== null) {
       // Update existing question
-      const updatedQuestions = questions.map((q, i) => 
+      const updatedQuestions = questions.map((q, i) =>
         i === editingQuestion ? newQuestion : q
       );
       setQuestions(updatedQuestions);
@@ -225,7 +225,7 @@ export default function QuestionGenerator({
 
       {/* Question Generator Panel */}
       {showGenerator && (
-        <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
+        <div className="border border-neutral-800 rounded-lg p-6 bg-neutral-800">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-lg font-medium text-gray-900">Question Generator</h4>
             <button
@@ -243,22 +243,20 @@ export default function QuestionGenerator({
           <div className="flex space-x-4 mb-6">
             <button
               onClick={() => setGenerationMode('ai')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                generationMode === 'ai'
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${generationMode === 'ai'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
+                  : 'bg-neutral-700 text-gray-300 border border-neutral-600 hover:bg-neutral-600'
+                }`}
             >
               <SparklesIcon className="h-5 w-5 inline mr-2" />
               AI Generation
             </button>
             <button
               onClick={() => setGenerationMode('manual')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                generationMode === 'manual'
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${generationMode === 'manual'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
+                  : 'bg-neutral-700 text-gray-300 border border-neutral-600 hover:bg-neutral-600'
+                }`}
             >
               <PencilIcon className="h-5 w-5 inline mr-2" />
               Manual Entry
@@ -283,7 +281,7 @@ export default function QuestionGenerator({
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Number of Questions
@@ -299,7 +297,7 @@ export default function QuestionGenerator({
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Reference *
@@ -480,7 +478,7 @@ export default function QuestionGenerator({
         <div className="space-y-4">
           <h4 className="text-lg font-medium text-gray-900">Generated Questions</h4>
           {questions.map((question, index) => (
-            <div key={question.id} className="border border-gray-200 rounded-lg p-4 bg-white">
+            <div key={question.id} className="border border-neutral-800 rounded-lg p-4 bg-neutral-900">
               <div className="flex justify-between items-start mb-3">
                 <h5 className="text-md font-medium text-gray-900">
                   Question {index + 1}
@@ -500,9 +498,9 @@ export default function QuestionGenerator({
                   </button>
                 </div>
               </div>
-              
+
               <p className="text-gray-700 mb-3">{question.question}</p>
-              
+
               {question.hasImage && question.imageUrl && (
                 <div className="mb-3">
                   <div className="relative max-w-sm max-h-48">
@@ -519,16 +517,15 @@ export default function QuestionGenerator({
                   </div>
                 </div>
               )}
-              
+
               <div className="space-y-1">
                 {question.options.map((option, optionIndex) => (
                   <div
                     key={optionIndex}
-                    className={`p-2 rounded border ${
-                      option === question.correctAnswer
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200'
-                    }`}
+                    className={`p-2 rounded border ${option === question.correctAnswer
+                        ? 'border-green-500 bg-green-900/20'
+                        : 'border-neutral-800 bg-black'
+                      }`}
                   >
                     <span className="font-medium text-gray-600 mr-2">
                       {String.fromCharCode(65 + optionIndex)}.
@@ -540,9 +537,9 @@ export default function QuestionGenerator({
                   </div>
                 ))}
               </div>
-              
+
               {question.explanation && (
-                <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                <div className="mt-3 p-3 bg-blue-900/20 rounded-lg">
                   <p className="text-sm text-blue-800">
                     <span className="font-medium">Explanation:</span> {question.explanation}
                   </p>

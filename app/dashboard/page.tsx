@@ -88,17 +88,17 @@ interface TestListItem {
 }
 
 const formTypeIcons: Record<string, { icon: string; color: string }> = {
-  feedback: { icon: '⭐', color: 'bg-yellow-100 text-yellow-800' },
-  inquiry: { icon: '❓', color: 'bg-blue-100 text-blue-800' },
-  complaint: { icon: '⚠️', color: 'bg-red-100 text-red-800' },
-  custom: { icon: '📝', color: 'bg-purple-100 text-purple-800' },
-  survey: { icon: '📊', color: 'bg-green-100 text-green-800' }
+  feedback: { icon: '⭐', color: 'bg-yellow-900/30 text-yellow-500' },
+  inquiry: { icon: '❓', color: 'bg-blue-900/30 text-blue-500' },
+  complaint: { icon: '⚠️', color: 'bg-red-900/30 text-red-500' },
+  custom: { icon: '📝', color: 'bg-purple-900/30 text-purple-500' },
+  survey: { icon: '📊', color: 'bg-green-900/30 text-green-500' }
 };
 
 const testTypeIcons: Record<string, { icon: string; color: string }> = {
-  mcq: { icon: '📝', color: 'bg-blue-100 text-blue-800' },
-  qa: { icon: '❓', color: 'bg-green-100 text-green-800' },
-  mixed: { icon: '📊', color: 'bg-purple-100 text-purple-800' }
+  mcq: { icon: '📝', color: 'bg-blue-900/30 text-blue-500' },
+  qa: { icon: '❓', color: 'bg-green-900/30 text-green-500' },
+  mixed: { icon: '📊', color: 'bg-purple-900/30 text-purple-500' }
 };
 
 export default function DashboardPage() {
@@ -494,7 +494,7 @@ export default function DashboardPage() {
                           </div>
                           <button
                             onClick={handleCancelEdit}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-gray-300 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
                           >
                             Cancel Edit
                           </button>
@@ -642,8 +642,8 @@ export default function DashboardPage() {
                               <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-500 dark:text-gray-400">Status:</span>
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${test.isActive
-                                  ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
-                                  : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+                                  ? 'bg-green-900/30 text-green-500'
+                                  : 'bg-neutral-800 text-gray-400'
                                   }`}>
                                   {test.isActive ? 'Active' : 'Inactive'}
                                 </span>
@@ -703,7 +703,7 @@ export default function DashboardPage() {
                           </div>
                           <button
                             onClick={handleCancelFormEdit}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-gray-300 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
                           >
                             Cancel Edit
                           </button>
@@ -753,13 +753,13 @@ export default function DashboardPage() {
                     <div className="flex items-center space-x-3">
                       <a
                         href="#"
-                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 bg-neutral-800 border border-neutral-700 rounded-lg hover:bg-neutral-700"
                       >
                         View All
                       </a>
                       <a
                         href="#"
-                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                       >
                         <PlusIcon className="h-4 w-4 mr-2" />
                         Create Form
@@ -908,7 +908,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Current Plan Status */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Current Plan</h3>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCurrentUser()?.isPaid
@@ -927,7 +927,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Usage Limits Display */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Usage Limits</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1067,7 +1067,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Subscription Plans */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   {session?.user.isPaid ? 'Subscription Management' : 'Upgrade Your Plan'}
                 </h3>

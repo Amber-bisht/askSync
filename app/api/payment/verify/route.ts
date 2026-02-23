@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, plan, paymentType } = await request.json();
-    
+
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.json({ error: 'Missing payment details' }, { status: 400 });
     }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     await connectDB();
-    
+
     const dbUser = await User.findOne({ email: session.user.email });
     if (!dbUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -47,32 +47,20 @@ export async function POST(request: NextRequest) {
       // Calculate subscription end date
       const now = new Date();
       let subscriptionEndDate: Date;
-      
+
       if (plan === 'monthly') {
         subscriptionEndDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
       } else {
         subscriptionEndDate = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 365 days
       }
 
-        // Update user subscription with new simplified limits
-        console.log('Updating user to paid with new limits structure');
-        
-        const updateResult = await User.findByIdAndUpdate(dbUser._id, {
-          $set: {
-            isPaid: true,
-            subscriptionEndDate,
-            expiryDate: subscriptionEndDate,
-            razorpayCustomerId: razorpay_payment_id,
-            // Update to paid user limits
-            testsLimit: 10,
-            formsLimit: 10,
-            accessListsLimit: 10,
-            aiGradingLimit: 20,
-            mcqAiLimit: 100,
-            questionAiLimit: 100
-          }
-        }, { new: true, upsert: false });
-      
+      // Update user subscription with new simplified limits using central method
+      console.log('Updating user to paid with new limits structure');
+      await dbUser.upgradeToPaid(subscriptionEndDate);
+
+      // Refresh user data to get updated fields
+      const updateResult = await User.findById(dbUser._id);
+
       console.log('User updated successfully:', {
         email: updateResult.email,
         isPaid: updateResult.isPaid,
@@ -110,7 +98,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error verifying payment:', error);
-    
+
     return NextResponse.json(
       { error: 'Failed to verify payment' },
       { status: 500 }
