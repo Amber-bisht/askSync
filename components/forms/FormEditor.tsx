@@ -10,20 +10,30 @@ import FormRenderer from './FormRenderer';
 import AccessControlSettings from './AccessControlSettings';
 import QuestionGenerator from './QuestionGenerator';
 import {
-  EyeIcon
+  EyeIcon,
+  DocumentTextIcon,
+  EnvelopeIcon,
+  HashtagIcon,
+  QueueListIcon,
+  CircleStackIcon,
+  CheckCircleIcon,
+  StarIcon,
+  CalendarDaysIcon,
+  QuestionMarkCircleIcon,
+  ClipboardDocumentCheckIcon
 } from '@heroicons/react/24/outline';
 
 const fieldTypes = [
-  { value: 'text', label: 'Text Input', icon: '📝' },
-  { value: 'email', label: 'Email', icon: '📧' },
-  { value: 'number', label: 'Number', icon: '🔢' },
-  { value: 'textarea', label: 'Text Area', icon: '📄' },
-  { value: 'select', label: 'Dropdown', icon: '📋' },
-  { value: 'radio', label: 'Radio Buttons', icon: '⚪' },
-  { value: 'checkbox', label: 'Checkboxes', icon: '☑️' },
-  { value: 'rating', label: 'Rating', icon: '⭐' },
-  { value: 'date', label: 'Date Picker', icon: '📅' },
-  { value: 'question', label: 'MCQ Question', icon: '❓' }
+  { value: 'text', label: 'Text Input', Icon: DocumentTextIcon },
+  { value: 'email', label: 'Email', Icon: EnvelopeIcon },
+  { value: 'number', label: 'Number', Icon: HashtagIcon },
+  { value: 'textarea', label: 'Text Area', Icon: DocumentTextIcon },
+  { value: 'select', label: 'Dropdown', Icon: QueueListIcon },
+  { value: 'radio', label: 'Radio Buttons', Icon: CircleStackIcon },
+  { value: 'checkbox', label: 'Checkboxes', Icon: CheckCircleIcon },
+  { value: 'rating', label: 'Rating', Icon: StarIcon },
+  { value: 'date', label: 'Date Picker', Icon: CalendarDaysIcon },
+  { value: 'question', label: 'MCQ Question', Icon: QuestionMarkCircleIcon }
 ];
 
 interface FormEditorProps {
@@ -176,7 +186,7 @@ export default function FormEditor({ initialForm, onSaveSuccess, isEditing = fal
       setFormTitle(template.name);
       setFormDescription(template.description);
       setFormType(template.type);
-      setFields(template.fields.map(field => ({ ...field, id: `field_${Date.now()}_${Math.random()}` })));
+      setFields(template.fields.map(field => ({ ...field, id: `field_${Date.now()}_${Math.random()}` })) as IFormField[]);
       setSelectedTemplate(templateKey);
       toast.success('Template loaded successfully');
     }
@@ -489,7 +499,7 @@ export default function FormEditor({ initialForm, onSaveSuccess, isEditing = fal
 
             {/* Access Control */}
             <div>
-              <h4 className="font-medium text-gray-900 mb-3">Access Control</h4>
+              <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Access Control</h4>
               <AccessControlSettings
                 isPrivate={accessControl.isPrivate}
                 selectedListId={accessControl.accessListId}
@@ -504,16 +514,16 @@ export default function FormEditor({ initialForm, onSaveSuccess, isEditing = fal
       {/* Right Sidebar - Field Types */}
       <div className="space-y-6">
         <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Add Fields</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Add Fields</h3>
           <div className="grid grid-cols-1 gap-2">
             {fieldTypes.map((fieldType) => (
               <button
                 key={fieldType.value}
                 onClick={() => addField(fieldType.value as IFormField['type'])}
-                className="flex items-center space-x-3 w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition-colors"
+                className="flex items-center space-x-3 w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-neutral-800 hover:border-blue-500 transition-colors"
               >
-                <span className="text-xl">{fieldType.icon}</span>
-                <span className="text-sm font-medium text-gray-900">{fieldType.label}</span>
+                <fieldType.Icon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{fieldType.label}</span>
               </button>
             ))}
           </div>
@@ -541,7 +551,7 @@ export default function FormEditor({ initialForm, onSaveSuccess, isEditing = fal
               </>
             ) : (
               <>
-                💾
+                <ClipboardDocumentCheckIcon className="h-5 w-5 mr-2" />
                 {isEditing ? 'Update Form' : 'Create Form'}
               </>
             )}

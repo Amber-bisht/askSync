@@ -8,7 +8,25 @@ import AccessListManager from '@/components/access/AccessListManager';
 import FormBuilder from '@/components/forms/FormBuilder';
 import FormEditor from '@/components/forms/FormEditor';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
-import { ListBulletIcon, ChartBarIcon, SparklesIcon, DocumentTextIcon, UsersIcon, PlusIcon, EyeIcon, TrashIcon, PencilIcon, ClipboardDocumentListIcon, CreditCardIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline';
+import {
+  ListBulletIcon,
+  ChartBarIcon,
+  SparklesIcon,
+  DocumentTextIcon,
+  UsersIcon,
+  PlusIcon,
+  EyeIcon,
+  TrashIcon,
+  PencilIcon,
+  ClipboardDocumentListIcon,
+  CreditCardIcon,
+  ClipboardDocumentCheckIcon,
+  ChatBubbleBottomCenterTextIcon,
+  QuestionMarkCircleIcon,
+  ExclamationTriangleIcon,
+  TableCellsIcon,
+  DocumentChartBarIcon
+} from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import SiteHeader from '@/components/SiteHeader';
 import MySubmissions from '@/components/MySubmissions';
@@ -87,18 +105,18 @@ interface TestListItem {
   }>;
 }
 
-const formTypeIcons: Record<string, { icon: string; color: string }> = {
-  feedback: { icon: '⭐', color: 'bg-yellow-900/30 text-yellow-500' },
-  inquiry: { icon: '❓', color: 'bg-blue-900/30 text-blue-500' },
-  complaint: { icon: '⚠️', color: 'bg-red-900/30 text-red-500' },
-  custom: { icon: '📝', color: 'bg-purple-900/30 text-purple-500' },
-  survey: { icon: '📊', color: 'bg-green-900/30 text-green-500' }
+const formTypeIcons: Record<string, { icon: any; color: string }> = {
+  feedback: { icon: ChatBubbleBottomCenterTextIcon, color: 'bg-yellow-900/30 text-yellow-500' },
+  inquiry: { icon: QuestionMarkCircleIcon, color: 'bg-blue-900/30 text-blue-500' },
+  complaint: { icon: ExclamationTriangleIcon, color: 'bg-red-900/30 text-red-500' },
+  custom: { icon: DocumentTextIcon, color: 'bg-purple-900/30 text-purple-500' },
+  survey: { icon: TableCellsIcon, color: 'bg-green-900/30 text-green-500' }
 };
 
-const testTypeIcons: Record<string, { icon: string; color: string }> = {
-  mcq: { icon: '📝', color: 'bg-blue-900/30 text-blue-500' },
-  qa: { icon: '❓', color: 'bg-green-900/30 text-green-500' },
-  mixed: { icon: '📊', color: 'bg-purple-900/30 text-purple-500' }
+const testTypeIcons: Record<string, { icon: any; color: string }> = {
+  mcq: { icon: ListBulletIcon, color: 'bg-blue-900/30 text-blue-500' },
+  qa: { icon: QuestionMarkCircleIcon, color: 'bg-green-900/30 text-green-500' },
+  mixed: { icon: DocumentChartBarIcon, color: 'bg-purple-900/30 text-purple-500' }
 };
 
 export default function DashboardPage() {
@@ -587,7 +605,7 @@ export default function DashboardPage() {
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center space-x-3">
                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeInfo.color}`}>
-                                  <span className="text-lg">{typeInfo.icon}</span>
+                                  <typeInfo.icon className="h-6 w-6" />
                                 </div>
                                 <div>
                                   <h3 className="font-medium text-white truncate">{test.testName}</h3>
@@ -810,7 +828,7 @@ export default function DashboardPage() {
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center space-x-3">
                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeInfo.color}`}>
-                                  <span className="text-lg">{typeInfo.icon}</span>
+                                  <typeInfo.icon className="h-6 w-6" />
                                 </div>
                                 <div>
                                   <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">{form.title}</h3>

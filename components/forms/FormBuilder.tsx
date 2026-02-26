@@ -14,19 +14,27 @@ import {
   DocumentDuplicateIcon,
   ChevronUpIcon,
   ChevronDownIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
+  DocumentTextIcon,
+  EnvelopeIcon,
+  HashtagIcon,
+  QueueListIcon,
+  CircleStackIcon,
+  CheckCircleIcon,
+  StarIcon,
+  CalendarDaysIcon
 } from '@heroicons/react/24/outline';
 
 const fieldTypes = [
-  { value: 'text', label: 'Text Input', icon: '📝' },
-  { value: 'email', label: 'Email', icon: '📧' },
-  { value: 'number', label: 'Number', icon: '🔢' },
-  { value: 'textarea', label: 'Text Area', icon: '📄' },
-  { value: 'select', label: 'Dropdown', icon: '📋' },
-  { value: 'radio', label: 'Radio Buttons', icon: '⚪' },
-  { value: 'checkbox', label: 'Checkboxes', icon: '☑️' },
-  { value: 'rating', label: 'Rating', icon: '⭐' },
-  { value: 'date', label: 'Date Picker', icon: '📅' }
+  { value: 'text', label: 'Text Input', Icon: DocumentTextIcon },
+  { value: 'email', label: 'Email', Icon: EnvelopeIcon },
+  { value: 'number', label: 'Number', Icon: HashtagIcon },
+  { value: 'textarea', label: 'Text Area', Icon: DocumentTextIcon },
+  { value: 'select', label: 'Dropdown', Icon: QueueListIcon },
+  { value: 'radio', label: 'Radio Buttons', Icon: CircleStackIcon },
+  { value: 'checkbox', label: 'Checkboxes', Icon: CheckCircleIcon },
+  { value: 'rating', label: 'Rating', Icon: StarIcon },
+  { value: 'date', label: 'Date Picker', Icon: CalendarDaysIcon }
 ];
 
 export default function FormBuilder() {
@@ -295,7 +303,7 @@ export default function FormBuilder() {
                     onClick={() => addField(fieldType.value as IFormField['type'])}
                     className="p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                   >
-                    <div className="text-lg mb-1">{fieldType.icon}</div>
+                    <fieldType.Icon className="h-6 w-6 mb-1 text-gray-400" />
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{fieldType.label}</div>
                   </button>
                 ))}
@@ -341,7 +349,7 @@ export default function FormBuilder() {
 
               {fields.length === 0 ? (
                 <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-                  <div className="text-4xl mb-4">📝</div>
+                  <DocumentTextIcon className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                   <p>No fields added yet. Choose a field type from the left panel to get started.</p>
                 </div>
               ) : (

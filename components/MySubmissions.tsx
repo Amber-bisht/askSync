@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  ClipboardDocumentListIcon, 
-  DocumentTextIcon, 
+import {
+  ClipboardDocumentListIcon,
+  DocumentTextIcon,
   EyeIcon,
   CalendarIcon,
   ChartBarIcon,
@@ -134,20 +134,20 @@ export default function MySubmissions() {
         {/* Loading skeleton */}
         <div className="space-y-4">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 animate-pulse">
+            <div key={i} className="bg-neutral-900 border border-neutral-800 rounded-lg shadow p-6 animate-pulse">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-lg"></div>
+                  <div className="w-10 h-10 bg-neutral-800 rounded-lg"></div>
                   <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-48"></div>
-                    <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded w-20"></div>
+                    <div className="h-4 bg-neutral-800 rounded w-48"></div>
+                    <div className="h-3 bg-neutral-800 rounded w-20"></div>
                   </div>
                 </div>
-                <div className="h-6 bg-gray-200 dark:bg-gray-600 rounded w-16"></div>
+                <div className="h-6 bg-neutral-800 rounded w-16"></div>
               </div>
               <div className="space-y-2">
-                <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full"></div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded w-3/4"></div>
+                <div className="h-3 bg-neutral-800 rounded w-full"></div>
+                <div className="h-3 bg-neutral-800 rounded w-3/4"></div>
               </div>
             </div>
           ))}
@@ -193,7 +193,7 @@ export default function MySubmissions() {
         {submissions.map((submission) => (
           <div
             key={submission.id}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow p-6"
+            className="bg-neutral-900 border border-neutral-800 rounded-lg shadow hover:shadow-md transition-shadow p-6"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center space-x-3">
@@ -226,8 +226,8 @@ export default function MySubmissions() {
                         {submission.score !== undefined && submission.maxScore !== undefined
                           ? `${submission.score}/${submission.maxScore}`
                           : submission.percentage !== undefined
-                          ? `${submission.percentage}%`
-                          : 'N/A'
+                            ? `${submission.percentage}%`
+                            : 'N/A'
                         }
                       </div>
                       {submission.percentage !== undefined && (
@@ -305,7 +305,7 @@ export default function MySubmissions() {
             {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
             {pagination.total} results
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <button
               onClick={() => handlePageChange(pagination.page - 1)}
@@ -314,11 +314,11 @@ export default function MySubmissions() {
             >
               Previous
             </button>
-            
+
             <span className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               Page {pagination.page} of {pagination.totalPages}
             </span>
-            
+
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page === pagination.totalPages}

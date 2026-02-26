@@ -1,11 +1,20 @@
 import { IFormField } from '@/models/Form';
+import {
+  StarIcon,
+  QuestionMarkCircleIcon,
+  ExclamationTriangleIcon,
+  FaceSmileIcon,
+  BriefcaseIcon,
+  WrenchIcon,
+  DocumentTextIcon
+} from '@heroicons/react/24/outline';
 
 export interface FormTemplate {
   id: string;
   name: string;
   description: string;
   type: 'feedback' | 'inquiry' | 'complaint' | 'custom' | 'survey';
-  icon: string;
+  icon: any;
   fields: Omit<IFormField, 'id'>[];
 }
 
@@ -15,7 +24,7 @@ export const formTemplates: FormTemplate[] = [
     name: 'Customer Feedback',
     description: 'Collect customer satisfaction and feedback',
     type: 'feedback',
-    icon: '⭐',
+    icon: StarIcon,
     fields: [
       {
         type: 'text',
@@ -75,7 +84,7 @@ export const formTemplates: FormTemplate[] = [
     name: 'General Inquiry',
     description: 'General questions and information requests',
     type: 'inquiry',
-    icon: '❓',
+    icon: QuestionMarkCircleIcon,
     fields: [
       {
         type: 'text',
@@ -136,7 +145,7 @@ export const formTemplates: FormTemplate[] = [
     name: 'Complaint Form',
     description: 'Report issues and complaints',
     type: 'complaint',
-    icon: '⚠️',
+    icon: ExclamationTriangleIcon,
     fields: [
       {
         type: 'text',
@@ -215,7 +224,7 @@ export const formTemplates: FormTemplate[] = [
     name: 'Event Feedback',
     description: 'Collect feedback about events and experiences',
     type: 'feedback',
-    icon: '🎉',
+    icon: FaceSmileIcon,
     fields: [
       {
         type: 'text',
@@ -299,7 +308,7 @@ export const formTemplates: FormTemplate[] = [
     name: 'Job Application',
     description: 'Comprehensive job application form for recruitment',
     type: 'inquiry',
-    icon: '💼',
+    icon: BriefcaseIcon,
     fields: [
       {
         type: 'text',
@@ -450,7 +459,7 @@ export const formTemplates: FormTemplate[] = [
     name: 'Service Request',
     description: 'Request services or support',
     type: 'inquiry',
-    icon: '🛠️',
+    icon: WrenchIcon,
     fields: [
       {
         type: 'text',

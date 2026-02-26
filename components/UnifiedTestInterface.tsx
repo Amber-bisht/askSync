@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useSession, signIn } from 'next-auth/react';
 import toast from 'react-hot-toast';
-import { ClockIcon, CheckCircleIcon, XCircleIcon, UserIcon, PlayIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, CheckCircleIcon, XCircleIcon, UserIcon, PlayIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 
 interface TestQuestion {
   id: string;
@@ -243,7 +243,9 @@ export default function UnifiedTestInterface() {
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="max-w-2xl w-full">
           <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-8 text-center">
-            <div className="text-6xl mb-6">📝</div>
+            <div className="flex justify-center mb-6">
+              <DocumentTextIcon className="h-20 w-20 text-blue-500" />
+            </div>
             <h1 className="text-3xl font-bold mb-4 text-white">
               {test.testName}
             </h1>
@@ -342,7 +344,9 @@ export default function UnifiedTestInterface() {
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="max-w-4xl w-full">
           <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-8 text-center">
-            <div className="text-6xl mb-4">✅</div>
+            <div className="flex justify-center mb-4">
+              <CheckCircleIcon className="h-20 w-20 text-green-500" />
+            </div>
             <h1 className="text-3xl font-bold mb-4 text-white">
               Test Submitted Successfully!
             </h1>

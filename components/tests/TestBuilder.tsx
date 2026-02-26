@@ -13,7 +13,9 @@ import {
   Cog6ToothIcon,
   SparklesIcon,
   ClockIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  ListBulletIcon,
+  QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
 import AccessControlSettings from '../forms/AccessControlSettings';
 
@@ -505,14 +507,14 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                   onClick={() => addQuestion('mcq')}
                   className="p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                 >
-                  <div className="text-lg mb-1">📝</div>
+                  <ListBulletIcon className="h-6 w-6 mb-1 text-blue-500" />
                   <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Multiple Choice</div>
                 </button>
                 <button
                   onClick={() => addQuestion('qa')}
                   className="p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                 >
-                  <div className="text-lg mb-1">❓</div>
+                  <QuestionMarkCircleIcon className="h-6 w-6 mb-1 text-green-500" />
                   <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Q&A</div>
                 </button>
               </div>
@@ -620,7 +622,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
 
               {questions.length === 0 ? (
                 <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-                  <div className="text-4xl mb-4">📝</div>
+                  <DocumentTextIcon className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                   <p>No questions added yet. Choose a question type from the left panel to get started.</p>
                 </div>
               ) : (

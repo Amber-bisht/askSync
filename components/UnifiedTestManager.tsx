@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
-import { 
-  EyeIcon, 
-  TrashIcon, 
-  DocumentArrowDownIcon
+import {
+  EyeIcon,
+  TrashIcon,
+  DocumentArrowDownIcon,
+  DocumentTextIcon,
+  ChartBarIcon
 } from '@heroicons/react/24/outline';
 
 interface Test {
@@ -172,10 +174,10 @@ export default function UnifiedTestManager() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading tests...</p>
+          <p className="text-gray-400">Loading tests...</p>
         </div>
       </div>
     );
@@ -184,22 +186,22 @@ export default function UnifiedTestManager() {
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Test Management</h1>
-        <p className="text-gray-600">Manage your tests, view responses, and export data</p>
+        <h1 className="text-3xl font-bold text-white mb-2">Test Management</h1>
+        <p className="text-gray-400">Manage your tests, view responses, and export data</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Tests List */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Your Tests</h3>
+              <h3 className="text-lg font-semibold text-white">Your Tests</h3>
               <span className="text-sm text-gray-500">{tests.length} tests</span>
             </div>
 
             {tests.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                <div className="text-4xl mb-4">📝</div>
+                <DocumentTextIcon className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <p>No tests created yet</p>
                 <p className="text-sm">Go to Create Test tab to get started</p>
               </div>
@@ -208,11 +210,10 @@ export default function UnifiedTestManager() {
                 {tests.map((test) => (
                   <div
                     key={test._id}
-                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                      selectedTest?._id === test._id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${selectedTest?._id === test._id
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                      }`}
                     onClick={() => setSelectedTest(test)}
                   >
                     <div className="flex items-center justify-between">
@@ -221,9 +222,8 @@ export default function UnifiedTestManager() {
                         <p className="text-sm text-gray-500">{test.responseCount} responses</p>
                         <p className="text-xs text-gray-400">{formatDate(test.createdAt)}</p>
                         <div className="flex items-center space-x-2 mt-1">
-                          <span className={`text-xs px-2 py-1 rounded ${
-                            test.isPublic ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                          }`}>
+                          <span className={`text-xs px-2 py-1 rounded ${test.isPublic ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                            }`}>
                             {test.isPublic ? 'Public' : 'Private'}
                           </span>
                           <span className="text-xs text-gray-500">
@@ -266,12 +266,12 @@ export default function UnifiedTestManager() {
           {selectedTest ? (
             <div className="space-y-6">
               {/* Test Header */}
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">{selectedTest.testName}</h2>
+                    <h2 className="text-2xl font-bold text-white">{selectedTest.testName}</h2>
                     {selectedTest.description && (
-                      <p className="text-gray-600 mt-1">{selectedTest.description}</p>
+                      <p className="text-gray-400 mt-1">{selectedTest.description}</p>
                     )}
                   </div>
                   <div className="flex items-center space-x-2">
@@ -311,10 +311,10 @@ export default function UnifiedTestManager() {
 
               {/* Responses Section */}
               {responses.length > 0 && (
-                <div className="bg-white rounded-lg shadow">
-                  <div className="p-6 border-b border-gray-200">
+                <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow">
+                  <div className="p-6 border-b border-neutral-800">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold">Responses</h3>
+                      <h3 className="text-lg font-semibold text-white">Responses</h3>
                       <button
                         onClick={() => exportToCSV(selectedTest._id)}
                         className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
@@ -365,9 +365,8 @@ export default function UnifiedTestManager() {
                               <div className="flex items-center space-x-4 text-sm text-gray-500">
                                 <span>{formatDate(response.submittedAt)}</span>
                                 {response.percentage !== undefined && (
-                                  <span className={`font-medium ${
-                                    response.percentage >= 70 ? 'text-green-600' : 'text-red-600'
-                                  }`}>
+                                  <span className={`font-medium ${response.percentage >= 70 ? 'text-green-600' : 'text-red-600'
+                                    }`}>
                                     {response.percentage}%
                                   </span>
                                 )}
@@ -377,7 +376,7 @@ export default function UnifiedTestManager() {
                             <div className="space-y-3">
                               {response.responses.map((resp: any, respIndex: number) => (
                                 <div key={respIndex} className="bg-gray-50 rounded-lg p-3">
-                                  <div className="font-medium text-gray-900 mb-2">{resp.question}</div>
+                                  <div className="font-medium text-white mb-2">{resp.question}</div>
                                   <div className="text-sm text-gray-700 mb-1">
                                     Answer: <span className="font-medium">{resp.answer}</span>
                                   </div>
@@ -403,10 +402,10 @@ export default function UnifiedTestManager() {
               )}
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow p-12 text-center">
-              <div className="text-6xl mb-4">📊</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Select a Test</h3>
-              <p className="text-gray-600">Choose a test from the sidebar to view its details and responses.</p>
+            <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow p-12 text-center">
+              <ChartBarIcon className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Select a Test</h3>
+              <p className="text-gray-600 dark:text-gray-400">Choose a test from the sidebar to view its details and responses.</p>
             </div>
           )}
         </div>
