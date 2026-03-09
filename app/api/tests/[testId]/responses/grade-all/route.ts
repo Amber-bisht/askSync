@@ -102,7 +102,7 @@ Grading criteria:
                             aiFeedback: result.feedback,
                             aiReasoning: result.reasoning,
                             pointsEarned: Math.min(result.score, maxPoints),
-                            isCorrect: result.isCorrect
+                            isCorrect: result.isCorrect !== undefined ? result.isCorrect : (result.score >= maxPoints * 0.7)
                         };
 
                         responseUpdated = true;

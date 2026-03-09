@@ -542,7 +542,7 @@ export default function TestResponsesPage() {
                             )}
                             {response.responses.some(r => r.questionType === 'qa' && r.isCorrect === undefined) && (
                               <div className="text-[9px] text-yellow-500 font-bold uppercase tracking-wider">
-                                Pending
+                                Ungraded
                               </div>
                             )}
                           </div>
@@ -583,7 +583,7 @@ export default function TestResponsesPage() {
                           <div className={`font-bold ${getScoreColor(selectedResponse.percentage)}`}>
                             Score: {selectedResponse.percentage}%
                             {selectedResponse.responses.some(r => r.questionType === 'qa' && r.isCorrect === undefined) && (
-                              <span className="ml-2 text-yellow-500 text-[10px] uppercase tracking-wider">(Pending)</span>
+                              <span className="ml-2 text-yellow-500 text-[10px] uppercase tracking-wider">(Ungraded)</span>
                             )}
                           </div>
                         )}

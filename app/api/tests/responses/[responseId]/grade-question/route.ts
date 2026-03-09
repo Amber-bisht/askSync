@@ -171,7 +171,7 @@ Grading criteria:
           aiImprovements: gradingResult.improvements || [],
           aiReasoning: gradingResult.reasoning,
           pointsEarned: Math.min(gradingResult.score, response.maxPoints || 1),
-          isCorrect: gradingResult.isCorrect
+          isCorrect: gradingResult.isCorrect !== undefined ? gradingResult.isCorrect : (gradingResult.score >= (response.maxPoints || 1) * 0.7)
         };
       }
       return response;
