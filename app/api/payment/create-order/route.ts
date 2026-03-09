@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
 
     // Plan pricing (in paise - Razorpay expects amount in smallest currency unit)
     const planPricing = {
-      monthly: 29900, // ₹299.00
-      yearly: 328900, // ₹3,289.00 (11 months price for 12+1 months - 1 month free)
+      monthly: 35000, // ₹350.00 (Includes PG charges)
+      yearly: 385000, // ₹3,850.00 (Includes PG charges - 11 months price)
     };
 
     const amount = planPricing[plan as keyof typeof planPricing];

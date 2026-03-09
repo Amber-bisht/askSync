@@ -156,10 +156,9 @@ UserSchema.methods.upgradeToPaid = async function (subscriptionEndDate: Date) {
   this.mcqAiLimit = 100;
   this.questionAiLimit = 100;
 
-  // RESET all usage counters to 0 upon purchase/renewal
+  // RESET all usage counters to 0 upon purchase/renewal (EXCEPT access lists)
   this.testsCreated = 0;
   this.formsCreated = 0;
-  this.accessListsCreated = 0;
   this.aiGradingUsed = 0;
   this.mcqAiUsed = 0;
   this.questionAiUsed = 0;

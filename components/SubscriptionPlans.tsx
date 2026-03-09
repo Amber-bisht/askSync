@@ -30,7 +30,7 @@ export default function SubscriptionPlans() {
   const plans = [
     {
       name: 'Monthly Plan',
-      price: '₹299',
+      price: '₹350',
       period: 'per month',
       features: [
         '10 Tests per month',
@@ -47,12 +47,12 @@ export default function SubscriptionPlans() {
     },
     {
       name: 'Yearly Plan',
-      price: '₹3,289',
+      price: '₹3,850',
       period: 'per year',
       features: [
         'Everything in Monthly Plan',
         '1 Month Free (11 months payment)',
-        'Save ₹299 annually',
+        'Save ₹350 annually',
         'Priority Support',
         'Advanced Analytics',
         'Bulk Operations',
@@ -225,7 +225,7 @@ export default function SubscriptionPlans() {
                 <span className="text-gray-600 dark:text-gray-400 ml-1">{plan.period}</span>
               </div>
               {plan.value === 'yearly' && (
-                <p className="text-sm text-green-600 dark:text-green-400 font-medium">Save ₹299 annually</p>
+                <p className="text-sm text-green-600 dark:text-green-400 font-medium">Save ₹350 annually</p>
               )}
             </div>
 
