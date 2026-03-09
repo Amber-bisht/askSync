@@ -84,12 +84,13 @@ export default function TestResponsesPage() {
   const [selectedResponse, setSelectedResponse] = useState<TestResponse | null>(null);
   const [gradingQuestion, setGradingQuestion] = useState<string | null>(null);
   const [isBulkGrading, setIsBulkGrading] = useState(false);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   const testId = params.testId as string;
 
-  const fetchTestAndResponses = useCallback(async () => {
+  const fetchTestAndResponses = useCallback(async (silent = false) => {
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
 
       // Fetch test details
       const testResponse = await fetch(`/api/tests/${testId}`);
@@ -152,8 +153,47 @@ export default function TestResponsesPage() {
 
       if (response.ok) {
         toast.success('Question graded successfully!');
-        // Refresh the responses to show updated data
-        fetchTestAndResponses();
+
+        // Update local state instead of full refresh
+        const updatedResponses = responses.map(res => {
+          if (res._id === responseId) {
+            const updatedQuestionResponses = res.responses.map(q => {
+              if (q.questionId === questionId) {
+                return {
+                  ...q,
+                  aiGraded: true,
+                  aiScore: data.grading.score,
+                  aiPercentage: data.grading.percentage,
+                  aiFeedback: data.grading.feedback,
+                  aiStrengths: data.grading.strengths || [],
+                  aiImprovements: data.grading.improvements || [],
+                  aiReasoning: data.grading.reasoning,
+                  pointsEarned: Math.min(data.grading.score, q.maxPoints || 1),
+                  isCorrect: data.grading.isCorrect
+                };
+              }
+              return q;
+            });
+
+            const updatedRes = {
+              ...res,
+              responses: updatedQuestionResponses,
+              totalScore: data.updatedResponse.totalScore,
+              maxScore: data.updatedResponse.maxScore,
+              percentage: data.updatedResponse.percentage,
+              isGraded: true,
+              gradedAt: new Date().toISOString()
+            };
+
+            if (selectedResponse?._id === responseId) {
+              setSelectedResponse(updatedRes);
+            }
+            return updatedRes;
+          }
+          return res;
+        });
+
+        setResponses(updatedResponses);
       } else {
         toast.error(data.error || 'Failed to grade question');
         if (data.limitReached) {
@@ -188,7 +228,8 @@ export default function TestResponsesPage() {
         if (data.limitReached) {
           toast.error('Process stopped because AI grading limit was reached.');
         }
-        fetchTestAndResponses();
+        // Silent refresh to avoid loading flash
+        fetchTestAndResponses(true);
       } else {
         toast.error(data.error || 'Failed to grade all responses');
       }
@@ -219,8 +260,42 @@ export default function TestResponsesPage() {
 
       if (response.ok) {
         toast.success(`Marked as ${isCorrect ? 'correct' : 'incorrect'}`);
-        // Refresh the responses to show updated data
-        fetchTestAndResponses();
+
+        // Update local state instead of full refresh
+        const updatedResponses = responses.map(res => {
+          if (res._id === responseId) {
+            const updatedQuestionResponses = res.responses.map(q => {
+              if (q.questionId === questionId) {
+                const pointsEarned = isCorrect ? (q.maxPoints || 1) : 0;
+                return {
+                  ...q,
+                  isCorrect: isCorrect,
+                  pointsEarned: pointsEarned,
+                  manuallyGraded: true
+                };
+              }
+              return q;
+            });
+
+            const updatedRes = {
+              ...res,
+              responses: updatedQuestionResponses,
+              totalScore: data.updatedResponse.totalScore,
+              maxScore: data.updatedResponse.maxScore,
+              percentage: data.updatedResponse.percentage,
+              isGraded: true,
+              gradedAt: new Date().toISOString()
+            };
+
+            if (selectedResponse?._id === responseId) {
+              setSelectedResponse(updatedRes);
+            }
+            return updatedRes;
+          }
+          return res;
+        });
+
+        setResponses(updatedResponses);
       } else {
         toast.error(data.error || 'Failed to grade question');
       }
@@ -273,8 +348,8 @@ export default function TestResponsesPage() {
 
       if (response.ok) {
         toast.success(`Results ${!test.showResults ? 'published' : 'hidden'} successfully!`);
-        // Refresh the test data
-        fetchTestAndResponses();
+        // Update local test state
+        setTest(prev => prev ? { ...prev, showResults: !prev.showResults } : null);
       } else {
         toast.error(data.error || 'Failed to update results visibility');
       }
@@ -334,69 +409,69 @@ export default function TestResponsesPage() {
             Back
           </button>
 
-          <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h1 className="text-3xl font-bold text-white mb-2">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm p-4 sm:p-6">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-4">
+              <div className="flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 break-words">
                   {test.title}
                 </h1>
                 {test.description && (
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">{test.description}</p>
+                  <p className="text-gray-400 text-sm sm:text-base mb-4">{test.description}</p>
                 )}
 
-                <div className="flex items-center space-x-6 text-sm text-gray-400">
+                <div className="flex flex-wrap items-center gap-y-2 gap-x-4 sm:gap-x-6 text-xs sm:text-sm text-gray-400">
                   <div className="flex items-center">
-                    <DocumentTextIcon className="h-4 w-4 mr-1" />
+                    <DocumentTextIcon className="h-4 w-4 mr-1 flex-shrink-0" />
                     {test.questions.length} questions
                   </div>
                   <div className="flex items-center">
-                    <UserIcon className="h-4 w-4 mr-1" />
+                    <UserIcon className="h-4 w-4 mr-1 flex-shrink-0" />
                     {responses.length} responses
                   </div>
                   <div className="flex items-center">
-                    <CalendarIcon className="h-4 w-4 mr-1" />
-                    Created {formatDate(test.createdAt)}
+                    <CalendarIcon className="h-4 w-4 mr-1 flex-shrink-0" />
+                    {formatDate(test.createdAt)}
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 {/* Grade All with AI Button */}
                 <button
                   onClick={handleGradeAll}
                   disabled={isBulkGrading || responses.length === 0}
-                  className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
-                  <SparklesIcon className={`h-4 w-4 mr-2 ${isBulkGrading ? 'animate-spin' : ''}`} />
-                  {isBulkGrading ? 'Grading All...' : 'Grade All with AI'}
+                  <SparklesIcon className={`h-4 w-4 mr-2 flex-shrink-0 ${isBulkGrading ? 'animate-spin' : ''}`} />
+                  {isBulkGrading ? 'Grading...' : 'Grade AI'}
                 </button>
 
                 {/* Export CSV Button */}
                 <button
                   onClick={handleExportCSV}
-                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  className="flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
                 >
-                  <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
-                  Export CSV
+                  <ArrowDownTrayIcon className="h-4 w-4 mr-2 flex-shrink-0" />
+                  Export
                 </button>
 
                 {/* Publish/Hide Results Button */}
                 <button
                   onClick={handleToggleResults}
-                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${test.showResults
+                  className={`flex items-center justify-center px-4 py-2 rounded-lg transition-colors text-sm ${test.showResults
                     ? 'bg-red-600 hover:bg-red-700 text-white'
                     : 'bg-blue-600 hover:bg-blue-700 text-white'
                     }`}
                 >
                   {test.showResults ? (
                     <>
-                      <EyeSlashIcon className="h-4 w-4 mr-2" />
-                      Hide Results
+                      <EyeSlashIcon className="h-4 w-4 mr-2 flex-shrink-0" />
+                      Hide
                     </>
                   ) : (
                     <>
-                      <EyeIcon className="h-4 w-4 mr-2" />
-                      Publish Results
+                      <EyeIcon className="h-4 w-4 mr-2 flex-shrink-0" />
+                      Publish
                     </>
                   )}
                 </button>
@@ -404,18 +479,18 @@ export default function TestResponsesPage() {
             </div>
 
             {/* Results Status */}
-            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${test.showResults
+            <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${test.showResults
               ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
               : 'bg-neutral-800 text-gray-300'
               }`}>
               {test.showResults ? (
                 <>
-                  <EyeIcon className="h-4 w-4 mr-1" />
+                  <CheckCircleIcon className="h-4 w-4 mr-1 flex-shrink-0" />
                   Results Published
                 </>
               ) : (
                 <>
-                  <EyeSlashIcon className="h-4 w-4 mr-1" />
+                  <EyeSlashIcon className="h-4 w-4 mr-1 flex-shrink-0" />
                   Results Hidden
                 </>
               )}
@@ -425,15 +500,15 @@ export default function TestResponsesPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Responses List */}
-          <div className="lg:col-span-1">
+          <div className={`${showMobileDetail ? 'hidden lg:block' : 'block'} lg:col-span-1`}>
             <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm">
-              <div className="p-6 border-b border-neutral-800">
-                <h2 className="text-xl font-semibold text-white">
+              <div className="p-4 sm:p-6 border-b border-neutral-800">
+                <h2 className="text-lg sm:text-xl font-semibold text-white">
                   Responses ({responses.length})
                 </h2>
               </div>
 
-              <div className="max-h-96 overflow-y-auto">
+              <div className="max-h-[60vh] lg:max-h-screen overflow-y-auto">
                 {responses.length === 0 ? (
                   <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                     No responses yet
@@ -443,28 +518,31 @@ export default function TestResponsesPage() {
                     {responses.map((response) => (
                       <button
                         key={response._id}
-                        onClick={() => setSelectedResponse(response)}
+                        onClick={() => {
+                          setSelectedResponse(response);
+                          setShowMobileDetail(true);
+                        }}
                         className={`w-full p-4 text-left hover:bg-neutral-800 transition-colors ${selectedResponse?._id === response._id ? 'bg-blue-900/20' : ''
                           }`}
                       >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="font-medium text-white">
-                              {response.isAnonymous ? 'Anonymous' : response.submittedBy.name || 'Unknown'}
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="font-medium text-white truncate">
+                              {response.isAnonymous ? 'Anonymous' : response.submittedBy.name || response.submittedBy.email || 'Unknown'}
                             </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
                               {formatDate(response.submittedAt)}
                             </div>
                           </div>
-                          <div className="text-right">
+                          <div className="text-right flex-shrink-0">
                             {response.percentage !== undefined && (
-                              <div className={`text-sm font-medium ${getScoreColor(response.percentage)}`}>
+                              <div className={`text-sm font-bold ${getScoreColor(response.percentage)}`}>
                                 {response.percentage}%
                               </div>
                             )}
                             {response.responses.some(r => r.questionType === 'qa' && r.isCorrect === undefined) && (
-                              <div className="text-[10px] text-yellow-500 font-medium uppercase tracking-wider">
-                                Pending Grading
+                              <div className="text-[9px] text-yellow-500 font-bold uppercase tracking-wider">
+                                Pending
                               </div>
                             )}
                           </div>
@@ -478,25 +556,34 @@ export default function TestResponsesPage() {
           </div>
 
           {/* Response Details */}
-          <div className="lg:col-span-2">
+          <div className={`${showMobileDetail ? 'block' : 'hidden lg:block'} lg:col-span-2`}>
             {selectedResponse ? (
               <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm">
-                <div className="p-6 border-b border-neutral-800">
-                  <div className="flex items-center justify-between">
+                <div className="p-4 sm:p-6 border-b border-neutral-800">
+                  <div className="flex items-center justify-between mb-2 lg:mb-0">
+                    <button
+                      onClick={() => setShowMobileDetail(false)}
+                      className="lg:hidden flex items-center text-blue-500 hover:text-blue-400 mb-2"
+                    >
+                      <ArrowLeftIcon className="h-4 w-4 mr-1" />
+                      Back to list
+                    </button>
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <h3 className="text-xl font-semibold text-white">
-                        {selectedResponse.isAnonymous ? 'Anonymous Response' : selectedResponse.submittedBy.name || 'Unknown User'}
+                      <h3 className="text-lg sm:text-xl font-semibold text-white break-words">
+                        {selectedResponse.isAnonymous ? 'Anonymous Response' : selectedResponse.submittedBy.name || selectedResponse.submittedBy.email || 'Unknown User'}
                       </h3>
-                      <div className="flex items-center space-x-4 text-sm mt-1">
+                      <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm mt-1">
                         <div className="flex items-center text-gray-400">
                           <CalendarIcon className="h-4 w-4 mr-1" />
                           {formatDate(selectedResponse.submittedAt)}
                         </div>
                         {selectedResponse.percentage !== undefined && (
-                          <div className={`font-medium ${getScoreColor(selectedResponse.percentage)}`}>
+                          <div className={`font-bold ${getScoreColor(selectedResponse.percentage)}`}>
                             Score: {selectedResponse.percentage}%
                             {selectedResponse.responses.some(r => r.questionType === 'qa' && r.isCorrect === undefined) && (
-                              <span className="ml-2 text-yellow-500 text-xs uppercase tracking-wider">(Pending Grading)</span>
+                              <span className="ml-2 text-yellow-500 text-[10px] uppercase tracking-wider">(Pending)</span>
                             )}
                           </div>
                         )}
@@ -505,7 +592,7 @@ export default function TestResponsesPage() {
                   </div>
                 </div>
 
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   <div className="space-y-6">
                     {selectedResponse.responses.map((response, index) => {
                       return (

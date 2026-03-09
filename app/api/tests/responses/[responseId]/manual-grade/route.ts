@@ -69,7 +69,7 @@ export async function POST(
     const updatedResponses = testResponse.responses.map((response: IUnifiedTestResponse['responses'][0]) => {
       if (response.questionId === questionId) {
         const pointsEarned = manualScore !== undefined ? Math.min(manualScore, response.maxPoints || 1) : (isCorrect ? (response.maxPoints || 1) : 0);
-        
+
         return {
           ...response,
           isCorrect: isCorrect,
@@ -87,7 +87,8 @@ export async function POST(
       return sum + (response.pointsEarned || 0);
     }, 0);
 
-    const maxScore = updatedResponses.reduce((sum: number, response: IUnifiedTestResponse['responses'][0]) => {
+    // Use existing maxScore if available, otherwise calculate from questions
+    const maxScore = testResponse.maxScore || updatedResponses.reduce((sum: number, response: IUnifiedTestResponse['responses'][0]) => {
       return sum + (response.maxPoints || 1);
     }, 0);
 
@@ -115,13 +116,13 @@ export async function POST(
 
   } catch (error) {
     console.error('Error manually grading question:', error);
-    
+
     if (error instanceof Error) {
       if (error.message === 'Unauthorized') {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to grade question manually' },
       { status: 500 }
