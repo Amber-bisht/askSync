@@ -37,8 +37,10 @@ export async function POST(
       );
     }
 
+    const isCreator = session?.user?.email === test.createdBy;
+
     // Check access control
-    if (!test.isPublic) {
+    if (!test.isPublic && !isCreator) {
       // For private tests, check if user has access via access list
       if (test.accessListId) {
         const { validateUserAccess } = await import('@/lib/accessControl');
@@ -46,7 +48,7 @@ export async function POST(
           isPrivate: true,
           accessListId: test.accessListId
         });
-        
+
         if (!accessResult.hasAccess) {
           return NextResponse.json(
             { error: accessResult.reason || 'Access denied' },
@@ -80,8 +82,8 @@ export async function POST(
       testName: test.testName,
       responses: responses.map((response: { questionId: string; answer: string }) => {
         // Try to find question by id first, then by _id
-        const question = test.questions.find((q: { _id?: string; id?: string; points: number }) => 
-          q.id === response.questionId || 
+        const question = test.questions.find((q: { _id?: string; id?: string; points: number }) =>
+          q.id === response.questionId ||
           q._id === response.questionId ||
           q._id === response.questionId.replace('question_', '')
         );
@@ -121,7 +123,7 @@ export async function POST(
       const totalScore = testResponse.responses.reduce((sum: number, response: { pointsEarned: number }) => sum + (response.pointsEarned || 0), 0);
       const maxScore = testResponse.maxScore;
       score = Math.min(100, Math.round((totalScore / maxScore) * 100));
-      
+
       // Update the response with calculated scores
       testResponse.totalScore = totalScore;
       testResponse.percentage = score;

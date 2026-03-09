@@ -30,8 +30,10 @@ export async function GET(
         explanation?: string;
         points: number;
         isRequired: boolean;
+        _id?: string;
       }>;
       testLink: string;
+      createdBy: string;
       isPublic: boolean;
       showResults: boolean;
       allowAnonymous: boolean;
@@ -54,8 +56,10 @@ export async function GET(
       );
     }
 
+    const isCreator = session?.user?.email === test.createdBy;
+
     // Check access control for private tests
-    if (!test.isPublic) {
+    if (!test.isPublic && !isCreator) {
       if (!session?.user?.email) {
         return NextResponse.json(
           { error: 'Authentication required to access this test' },
@@ -69,7 +73,7 @@ export async function GET(
           isPrivate: true,
           accessListId: test.accessListId
         });
-        
+
         if (!accessResult.hasAccess) {
           return NextResponse.json(
             { error: accessResult.reason || 'Access denied' },
@@ -84,12 +88,18 @@ export async function GET(
       }
     }
 
-    // Return test data without sensitive information
+    // Return test data
+    // Security: Only the creator sees correct answers and explanations
     const publicTest = {
       _id: test._id,
       testName: test.testName,
       description: test.description,
-      questions: test.questions,
+      questions: test.questions.map(q => {
+        if (isCreator) return q;
+        // Strip sensitive fields for students
+        const { correctAnswer, explanation, ...publicQ } = q;
+        return publicQ;
+      }),
       testLink: test.testLink,
       isPublic: test.isPublic,
       showResults: test.showResults,

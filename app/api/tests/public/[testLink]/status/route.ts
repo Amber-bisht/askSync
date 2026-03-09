@@ -25,14 +25,39 @@ export async function GET(
     // Find the test
     const test = await UnifiedTest.findOne({
       testLink: testLink,
-      isPublic: true
+      isActive: true
     });
 
     if (!test) {
       return NextResponse.json(
-        { error: 'Test not found or not public' },
+        { error: 'Test not found or inactive' },
         { status: 404 }
       );
+    }
+
+    const isCreator = session?.user?.email === test.createdBy;
+
+    // Check access control for private tests
+    if (!test.isPublic && !isCreator) {
+      if (test.accessListId) {
+        const { validateUserAccess } = await import('@/lib/accessControl');
+        const accessResult = await validateUserAccess(session.user.email, {
+          isPrivate: true,
+          accessListId: test.accessListId
+        });
+
+        if (!accessResult.hasAccess) {
+          return NextResponse.json(
+            { error: accessResult.reason || 'Access denied' },
+            { status: 403 }
+          );
+        }
+      } else {
+        return NextResponse.json(
+          { error: 'This test is private and requires access' },
+          { status: 403 }
+        );
+      }
     }
 
     // Check if user has already submitted this test
