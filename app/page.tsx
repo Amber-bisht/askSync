@@ -16,7 +16,7 @@ export default function HomePage() {
       opacity: 1,
       transition: {
         staggerChildren: 0.03,
-        delayChildren: 0.5,
+        delayChildren: 0.1,
       },
     },
   };
@@ -70,7 +70,7 @@ export default function HomePage() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
             className="text-lg md:text-xl text-white max-w-2xl mx-auto mb-12 font-normal leading-relaxed"
           >
             The definitive platform for AI-powered testing and forms. <br className="hidden md:block" />
@@ -80,7 +80,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.8, duration: 0.8 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             {session ? (

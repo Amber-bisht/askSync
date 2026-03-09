@@ -62,10 +62,18 @@ export default function ParticleBackground() {
             particles.push(createParticle());
         }
 
+        const radiusSq = interactionRadius * interactionRadius;
+
         const draw = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            particles.forEach((p) => {
+            ctx.beginPath();
+            ctx.fillStyle = '#FFFFFF';
+            ctx.globalAlpha = 0.5;
+
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+
                 // Natural movement
                 p.x += p.vx;
                 p.y += p.vy;
@@ -74,26 +82,25 @@ export default function ParticleBackground() {
                 if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-                // Mouse interaction
+                // Mouse interaction - Optimized distance check
                 const dx = mouseRef.current.x - p.x;
                 const dy = mouseRef.current.y - p.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+                const distSq = dx * dx + dy * dy;
 
-                if (distance < interactionRadius) {
+                if (distSq < radiusSq) {
+                    const distance = Math.sqrt(distSq);
                     const force = (interactionRadius - distance) / interactionRadius;
                     const angle = Math.atan2(dy, dx);
                     p.x -= Math.cos(angle) * force * 5;
                     p.y -= Math.sin(angle) * force * 5;
                 }
 
-                // Draw particle
-                ctx.beginPath();
+                // Draw particle - Batching arcs
+                ctx.moveTo(p.x + p.size, p.y);
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = 0.5;
-                ctx.fill();
-            });
+            }
 
+            ctx.fill();
             animationFrameId = requestAnimationFrame(draw);
         };
 
