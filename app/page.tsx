@@ -106,7 +106,7 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="btn-pill bg-transparent text-white border border-neutral-700 hover:bg-white/10 transition-all font-medium"
             >
-              Learn More
+              View GitHub
             </Link>
           </motion.div>
         </div>
