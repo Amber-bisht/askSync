@@ -120,18 +120,15 @@ Please provide your evaluation in the following JSON format:
   "feedback": "<detailed feedback explaining the grade>",
   "strengths": ["<list of what the student got right>"],
   "improvements": ["<list of areas for improvement>"],
-  "isCorrect": <boolean - true if score is 8 or above out of 10>,
+  "isCorrect": <boolean - true if score is at least 70% of ${maxPoints}>,
   "reasoning": "<brief explanation of the scoring decision>"
 }
 
 Grading criteria:
-- 0-2: Completely incorrect or irrelevant
-- 3-4: Partially correct but major errors
-- 5-6: Somewhat correct with some understanding
-- 7-8: Mostly correct with minor errors
-- 9-10: Completely correct or excellent answer
-
-Be fair but thorough in your evaluation. Consider partial credit for partially correct answers.`;
+- Give 0 if completely incorrect or irrelevant
+- Give full points (${maxPoints}) if completely correct or excellent
+- Scale points accordingly for partially correct answers
+- Be fair but thorough in your evaluation. Consider partial credit for partially correct answers.`;
 
     const systemPrompt = "You are an expert educator grading student answers. Always respond with valid JSON.";
     const content = await generateGroqContent(prompt, systemPrompt);

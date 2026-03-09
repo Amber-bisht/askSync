@@ -68,7 +68,8 @@ export async function POST(
     // Update the question response with manual grading
     const updatedResponses = testResponse.responses.map((response: IUnifiedTestResponse['responses'][0]) => {
       if (response.questionId === questionId) {
-        const pointsEarned = manualScore !== undefined ? Math.min(manualScore, response.maxPoints || 1) : (isCorrect ? (response.maxPoints || 1) : 0);
+        const maxPoints = response.maxPoints || 1;
+        const pointsEarned = manualScore !== undefined ? Math.min(manualScore, maxPoints) : (isCorrect ? maxPoints : 0);
 
         return {
           ...response,

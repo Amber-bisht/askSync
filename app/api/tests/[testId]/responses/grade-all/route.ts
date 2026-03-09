@@ -66,25 +66,33 @@ export async function POST(
                     if (!originalQuestion) continue;
 
                     // AI Grading Logic (similar to individual endpoint)
+                    const maxPoints = originalQuestion.points || 1;
                     const prompt = `You are an expert teacher grading student answers. Evaluate:
 Question: "${originalQuestion.question}"
 ${originalQuestion.correctAnswer ? `Key Points: "${originalQuestion.correctAnswer}"` : ''}
 Student Answer: "${questionResponse.answer}"
 
-JSON format:
+Please provide your evaluation in the following JSON format:
 {
-  "score": <0-10>,
-  "percentage": <0-100>,
-  "feedback": "...",
-  "isCorrect": <boolean>,
-  "reasoning": "..."
-}`;
+  "score": <number from 0 to ${maxPoints}>,
+  "percentage": <number from 0 to 100>,
+  "feedback": "<detailed feedback explaining the grade>",
+  "isCorrect": <boolean - true if score is at least 70% of ${maxPoints}>,
+  "reasoning": "<brief explanation of the scoring decision>"
+}
+
+Grading criteria:
+- Give 0 if completely incorrect or irrelevant
+- Give full points (${maxPoints}) if completely correct or excellent
+- Scale points accordingly for partially correct answers
+- Be fair but thorough in your evaluation.`;
 
                     const content = await generateGroqContent(prompt, "Respond with valid JSON.");
                     if (!content) continue;
 
                     try {
-                        const result = JSON.parse(content.match(/\{[\s\S]*\}/)?.[0] || content);
+                        const jsonMatch = content.match(/\{[\s\S]*\}/);
+                        const result = JSON.parse(jsonMatch ? jsonMatch[0] : content);
 
                         updatedResponses[i] = {
                             ...questionResponse,
@@ -93,7 +101,7 @@ JSON format:
                             aiPercentage: result.percentage,
                             aiFeedback: result.feedback,
                             aiReasoning: result.reasoning,
-                            pointsEarned: Math.min(result.score, questionResponse.maxPoints || 1),
+                            pointsEarned: Math.min(result.score, maxPoints),
                             isCorrect: result.isCorrect
                         };
 
@@ -112,7 +120,7 @@ JSON format:
                 // Recalculate scores for this specific response
                 const totalScore = updatedResponses.reduce((sum, r) => sum + (r.pointsEarned || 0), 0);
                 const maxScore = testResponse.maxScore || updatedResponses.reduce((sum, r) => sum + (r.maxPoints || 1), 0);
-                const percentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
+                const percentage = maxScore > 0 ? Math.min(100, Math.round((totalScore / maxScore) * 100)) : 0;
 
                 await UnifiedTestResponse.findByIdAndUpdate(testResponse._id, {
                     responses: updatedResponses,
