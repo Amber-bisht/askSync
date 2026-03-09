@@ -352,7 +352,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
     };
 
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="min-h-screen bg-black p-4">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6 flex items-center justify-between">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Test Preview</h1>
@@ -370,7 +370,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="min-h-screen bg-black p-4">
       <div className="max-w-6xl mx-auto">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -385,7 +385,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
           {/* Left Panel - Test Settings */}
           <div className="lg:col-span-1 space-y-6">
             {/* Basic Info */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Test Details</h3>
               <div className="space-y-4">
                 <div>
@@ -430,7 +430,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
             </div>
 
             {/* AI Generation */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">AI Generation</h3>
               <div className="space-y-4">
                 <div>
@@ -500,7 +500,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
             </div>
 
             {/* Question Types */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Add Questions</h3>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -521,7 +521,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
             </div>
 
             {/* Test Settings */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Test Settings</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
@@ -586,7 +586,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
             </div>
 
             {/* Actions */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
               <div className="space-y-3">
                 <button
                   onClick={() => setIsPreviewMode(true)}
@@ -612,7 +612,7 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
 
           {/* Right Panel - Question Builder */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Test Questions ({questions.length})</h3>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -745,7 +745,7 @@ function QuestionEditor({
       </div>
 
       {isEditing ? (
-        <div className="space-y-4 bg-gray-50 dark:bg-gray-700 p-4 rounded">
+        <div className="space-y-4 bg-black p-4 rounded border border-neutral-800">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Question</label>
             <textarea
@@ -832,7 +832,7 @@ function QuestionEditor({
           </div>
         </div>
       ) : (
-        <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+        <div className="bg-black border border-neutral-800 p-3 rounded">
           <div className="text-gray-900 dark:text-gray-100 mb-2">{question.question || 'Untitled Question'}</div>
           {question.type === 'mcq' && question.options && (
             <div className="space-y-1">
@@ -860,7 +860,7 @@ function TestPreview({ test }: {
   }
 }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{test.testName}</h2>
         {test.description && (
@@ -883,7 +883,7 @@ function TestPreview({ test }: {
 
       <div className="space-y-6">
         {test.questions.map((question: { question: string; type: string; options?: string[]; points: number; id?: string }, index: number) => (
-          <div key={question.id || index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+          <div key={question.id || index} className="border border-neutral-800 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="font-medium text-gray-900 dark:text-gray-100">
                 Question {index + 1} ({question.type.toUpperCase()})
