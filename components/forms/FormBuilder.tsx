@@ -238,7 +238,7 @@ export default function FormBuilder() {
                 <option value="">Select a template...</option>
                 {formTemplates.map(template => (
                   <option key={template.id} value={template.id}>
-                    {template.icon} {template.name}
+                    {template.name}
                   </option>
                 ))}
               </select>
