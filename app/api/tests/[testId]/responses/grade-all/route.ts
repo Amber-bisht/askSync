@@ -61,9 +61,16 @@ export async function POST(
                         break;
                     }
 
-                    // Find original question
-                    const originalQuestion = test.questions.find((q: IUnifiedTestQuestion) => q.id === questionResponse.questionId);
-                    if (!originalQuestion) continue;
+                    // Find original question - robust lookup matching submission logic
+                    const originalQuestion = test.questions.find((q: IUnifiedTestQuestion) =>
+                        q.id === questionResponse.questionId ||
+                        (q as any)._id?.toString() === questionResponse.questionId ||
+                        (q as any)._id?.toString() === questionResponse.questionId.replace('question_', '')
+                    );
+                    if (!originalQuestion) {
+                        console.log(`Skipping question ${questionResponse.questionId} - not found in test`);
+                        continue;
+                    }
 
                     // AI Grading Logic (similar to individual endpoint)
                     const maxPoints = originalQuestion.points || 1;
@@ -122,13 +129,15 @@ Grading criteria:
                 const maxScore = testResponse.maxScore || updatedResponses.reduce((sum, r) => sum + (r.maxPoints || 1), 0);
                 const percentage = maxScore > 0 ? Math.min(100, Math.round((totalScore / maxScore) * 100)) : 0;
 
+                const isFullyGraded = updatedResponses.every((r) => r.isCorrect !== undefined);
+
                 await UnifiedTestResponse.findByIdAndUpdate(testResponse._id, {
                     responses: updatedResponses,
                     totalScore,
                     maxScore,
                     percentage,
-                    isGraded: true,
-                    gradedAt: new Date()
+                    isGraded: isFullyGraded,
+                    gradedAt: isFullyGraded ? new Date() : undefined
                 });
             }
 

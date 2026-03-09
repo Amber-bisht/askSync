@@ -92,9 +92,12 @@ export async function POST(
       );
     }
 
-    // Find the original question in the test
+    // Find the original question in the test - robust lookup matching submission logic
     const originalQuestion = test.questions.find(
-      (q: IUnifiedTestQuestion) => q.id === questionId
+      (q: IUnifiedTestQuestion) =>
+        q.id === questionId ||
+        (q as any)._id?.toString() === questionId ||
+        (q as any)._id?.toString() === questionId.replace('question_', '')
     );
 
     if (!originalQuestion) {
@@ -185,14 +188,16 @@ Grading criteria:
     const maxScore = testResponse.maxScore || updatedResponses.reduce((sum: number, r: any) => sum + (r.maxPoints || 1), 0);
     const percentage = maxScore > 0 ? Math.min(100, Math.round((totalScore / maxScore) * 100)) : 0;
 
+    const isFullyGraded = updatedResponses.every((r: any) => r.isCorrect !== undefined);
+
     // Update the test response
     await UnifiedTestResponse.findByIdAndUpdate(responseId, {
       responses: updatedResponses,
       totalScore,
       maxScore,
       percentage,
-      isGraded: true,
-      gradedAt: new Date()
+      isGraded: isFullyGraded,
+      gradedAt: isFullyGraded ? new Date() : undefined
     });
 
     // Update user's AI grading count

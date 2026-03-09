@@ -95,14 +95,16 @@ export async function POST(
 
     const percentage = maxScore > 0 ? Math.min(100, Math.round((totalScore / maxScore) * 100)) : 0;
 
+    const isFullyGraded = updatedResponses.every((r: any) => r.isCorrect !== undefined);
+
     // Update the test response
     await UnifiedTestResponse.findByIdAndUpdate(responseId, {
       responses: updatedResponses,
       totalScore,
       maxScore,
       percentage,
-      isGraded: true,
-      gradedAt: new Date()
+      isGraded: isFullyGraded,
+      gradedAt: isFullyGraded ? new Date() : undefined
     });
 
     return NextResponse.json({

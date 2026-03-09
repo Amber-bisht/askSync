@@ -113,22 +113,24 @@ export async function POST(
       isGraded: false
     });
 
+    // Calculate actual scores and status
+    const allMcq = test.questions.every((q: { type: string }) => q.type === 'mcq');
+    const totalScore = testResponse.responses.reduce((sum: number, response: { pointsEarned: number }) => sum + (response.pointsEarned || 0), 0);
+    const maxScore = testResponse.maxScore || 1;
+    const percentage = Math.min(100, Math.round((totalScore / maxScore) * 100));
+
+    testResponse.totalScore = totalScore;
+    testResponse.percentage = percentage;
+    testResponse.isGraded = allMcq;
+
     await testResponse.save();
 
-    // Calculate score if showResults is enabled
-    let score = null;
+    // Prepare results if showResults is enabled
     let results = null;
+    let score = null;
 
     if (test.showResults) {
-      const totalScore = testResponse.responses.reduce((sum: number, response: { pointsEarned: number }) => sum + (response.pointsEarned || 0), 0);
-      const maxScore = testResponse.maxScore;
-      score = Math.min(100, Math.round((totalScore / maxScore) * 100));
-
-      // Update the response with calculated scores
-      testResponse.totalScore = totalScore;
-      testResponse.percentage = score;
-      await testResponse.save();
-
+      score = percentage;
       results = testResponse.responses.map((response: IUnifiedTestResponse['responses'][0]) => ({
         questionId: response.questionId,
         question: response.question,
