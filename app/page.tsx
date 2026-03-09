@@ -2,63 +2,122 @@
 
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { motion, Variants } from 'framer-motion';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import SiteHeader from '@/components/SiteHeader';
+import ParticleBackground from '@/components/ParticleBackground';
 
 export default function HomePage() {
   const { data: session } = useSession();
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.03,
+        delayChildren: 0.5,
+      },
+    },
+  };
+
+  const letterVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        damping: 12,
+        stiffness: 200,
+      },
+    },
+  };
+
+  const headline = "Grade at the speed of thought";
+  const characters = headline.split("");
+
   return (
-    <div className="min-h-screen bg-black transition-colors duration-300">
-      {/* Site Header */}
+    <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black overflow-x-hidden">
       <SiteHeader />
 
-      {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center">
-          {/* Enhanced Hero Title */}
-          <div className="mb-8">
-            <h1 className="text-5xl font-extrabold text-white sm:text-6xl md:text-7xl leading-tight">
-              <span className="block">Create & Take</span>
-              <span className="block text-gray-300">
-                AI-Powered Tests & Forms
+      <main className="relative flex flex-col items-center justify-center min-h-[85vh] px-4 overflow-hidden">
+        {/* Particle System */}
+        <ParticleBackground />
+
+        <div className="relative z-10 w-full text-center px-4">
+          <motion.h1
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="antigravity-text text-[clamp(2.5rem,7vw,9.5rem)] font-medium mb-12"
+          >
+            {headline.split(" ").map((word, wordIndex) => (
+              <span key={wordIndex} className="inline-block whitespace-nowrap pr-[0.2em]">
+                {word.split("").map((char, charIndex) => (
+                  <motion.span
+                    key={charIndex}
+                    variants={letterVariants}
+                    className="inline-block"
+                  >
+                    {char}
+                  </motion.span>
+                ))}
               </span>
-            </h1>
-          </div>
+            ))}
+          </motion.h1>
 
-          {/* Enhanced Description */}
-          <div className="max-w-4xl mx-auto mb-12">
-            <p className="text-xl text-gray-300 leading-relaxed mb-4">
-              Transform your learning experience with intelligent test generation, seamless form creation, and comprehensive performance tracking.
-            </p>
-            <p className="text-lg text-gray-400">
-              Powered by advanced AI to create engaging, personalized assessments and forms for students and educators.
-            </p>
-          </div>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.5, duration: 0.8 }}
+            className="text-lg md:text-xl text-white max-w-2xl mx-auto mb-12 font-normal leading-relaxed"
+          >
+            The definitive platform for AI-powered testing and forms. <br className="hidden md:block" />
+            Secure, scalable, and startlingly precise.
+          </motion.p>
 
-          {/* Enhanced CTA Section */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.8, duration: 0.8 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
             {session ? (
-              <>
-                <Link href="/dashboard" className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-neutral-900 border border-neutral-800 rounded-xl shadow-lg hover:bg-neutral-800 transform hover:-translate-y-1 transition-all duration-300">
-                  <span>Dashboard</span>
-                  <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-                </Link>
-              </>
+              <Link
+                href="/dashboard"
+                className="btn-pill bg-white text-black hover:bg-neutral-200 flex items-center group transition-all"
+              >
+                Go to Dashboard
+                <ArrowRightIcon className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
             ) : (
-              <>
-                <Link href="/auth" className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-neutral-900 border border-neutral-800 rounded-xl shadow-lg hover:bg-neutral-800 transform hover:-translate-y-1 transition-all duration-300">
-                  <span>Get Started</span>
-                  <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-                </Link>
-              </>
+              <Link
+                href="/auth"
+                className="btn-pill bg-white text-black hover:bg-neutral-200 flex items-center group transition-all"
+              >
+                Initialize Now
+                <ArrowRightIcon className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
             )}
-
-          </div>
+            <Link
+              href="https://github.com/Amber-bisht/askSync"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-pill bg-transparent text-white border border-neutral-700 hover:bg-white/10 transition-all font-medium"
+            >
+              Learn More
+            </Link>
+          </motion.div>
         </div>
-
-
       </main>
+
+      {/* Subtle Bottom Section */}
+      <footer className="py-12 border-t border-neutral-900 bg-black relative z-10">
+        <div className="max-w-7xl mx-auto px-4 text-center text-gray-400 text-sm tracking-tight uppercase font-medium">
+          © {new Date().getFullYear()} AskSync by amber bisht. Built for the future of learning.
+        </div>
+      </footer>
     </div>
   );
 }

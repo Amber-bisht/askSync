@@ -12,12 +12,12 @@ export default function SiteHeader() {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header className="bg-black shadow-sm border-b border-neutral-800 transition-colors duration-200">
+    <header className="bg-black shadow-sm border-b border-neutral-800 transition-colors duration-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-6">
+        <div className="flex justify-between items-center py-5">
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-white hover:text-gray-300 transition-colors">
-              AskSync
+            <Link href="/" className="text-xl font-bold text-white hover:text-neutral-400 transition-colors tracking-tight">
+              AskSync - Test and Forms
             </Link>
           </div>
 
@@ -48,11 +48,10 @@ export default function SiteHeader() {
             )}
           </nav>
 
-          {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={toggleMenu}
-              className="text-gray-400 hover:text-white focus:outline-none"
+              className="text-gray-500 hover:text-black focus:outline-none"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? (
@@ -66,7 +65,7 @@ export default function SiteHeader() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-neutral-800 space-y-4">
+          <nav className="md:hidden py-4 border-t border-neutral-800 space-y-4 bg-black">
             <Link
               href="https://github.com/Amber-bisht/askSync"
               target="_blank"
