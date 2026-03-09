@@ -83,6 +83,7 @@ export default function TestResponsesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedResponse, setSelectedResponse] = useState<TestResponse | null>(null);
   const [gradingQuestion, setGradingQuestion] = useState<string | null>(null);
+  const [isBulkGrading, setIsBulkGrading] = useState(false);
 
   const testId = params.testId as string;
 
@@ -164,6 +165,38 @@ export default function TestResponsesPage() {
       toast.error('Failed to grade question');
     } finally {
       setGradingQuestion(null);
+    }
+  };
+
+  const handleGradeAll = async () => {
+    if (!testId) return;
+
+    if (!confirm('Are you sure you want to grade all ungraded answers using AI? This will use your AI grading quota.')) {
+      return;
+    }
+
+    setIsBulkGrading(true);
+    try {
+      const response = await fetch(`/api/tests/${testId}/responses/grade-all`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(`Successfully graded ${data.gradedCount} answers!`);
+        if (data.limitReached) {
+          toast.error('Process stopped because AI grading limit was reached.');
+        }
+        fetchTestAndResponses();
+      } else {
+        toast.error(data.error || 'Failed to grade all responses');
+      }
+    } catch (error) {
+      console.error('Error bulk grading:', error);
+      toast.error('Failed to grade responses');
+    } finally {
+      setIsBulkGrading(false);
     }
   };
 
@@ -328,6 +361,16 @@ export default function TestResponsesPage() {
               </div>
 
               <div className="flex items-center space-x-3">
+                {/* Grade All with AI Button */}
+                <button
+                  onClick={handleGradeAll}
+                  disabled={isBulkGrading || responses.length === 0}
+                  className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <SparklesIcon className={`h-4 w-4 mr-2 ${isBulkGrading ? 'animate-spin' : ''}`} />
+                  {isBulkGrading ? 'Grading All...' : 'Grade All with AI'}
+                </button>
+
                 {/* Export CSV Button */}
                 <button
                   onClick={handleExportCSV}
@@ -341,8 +384,8 @@ export default function TestResponsesPage() {
                 <button
                   onClick={handleToggleResults}
                   className={`flex items-center px-4 py-2 rounded-lg transition-colors ${test.showResults
-                      ? 'bg-red-600 hover:bg-red-700 text-white'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
                     }`}
                 >
                   {test.showResults ? (
@@ -362,8 +405,8 @@ export default function TestResponsesPage() {
 
             {/* Results Status */}
             <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${test.showResults
-                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
-                : 'bg-neutral-800 text-gray-300'
+              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
+              : 'bg-neutral-800 text-gray-300'
               }`}>
               {test.showResults ? (
                 <>
@@ -490,52 +533,61 @@ export default function TestResponsesPage() {
                             </div>
                           </div>
 
-                          {/* Grading Controls - Only show for question-answer type questions that are not graded */}
-                          {response.questionType === 'qa' && response.isCorrect === undefined && (
-                            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                              <div className="flex items-center justify-between">
-                                <div className="text-sm text-blue-700 dark:text-blue-300 font-medium">
-                                  Grade this answer:
+                          {/* Grading Controls - Only show if not graded */}
+                          {response.questionType === 'qa' && (
+                            <div className="mt-4 p-4 bg-neutral-800/50 rounded-lg border border-neutral-700">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="text-sm text-gray-400 font-medium">
+                                  {response.isCorrect !== undefined ? (
+                                    <div className="flex items-center space-x-2">
+                                      <span className={response.isCorrect ? 'text-green-500' : 'text-red-500'}>
+                                        {response.isCorrect ? '✓ Marked as Correct' : '✗ Marked as Incorrect'}
+                                      </span>
+                                      {response.manuallyGraded && <span className="text-xs text-neutral-500">(Manual)</span>}
+                                    </div>
+                                  ) : (
+                                    "Grade this answer:"
+                                  )}
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                  {/* Manual Grading Buttons */}
+                                  {/* Manual Grading Buttons (Toggle) */}
                                   <button
                                     onClick={() => handleManualGrading(selectedResponse._id, response.questionId, true)}
-                                    className="flex items-center px-3 py-1 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 text-green-700 dark:text-green-300 rounded-md text-sm font-medium transition-colors"
+                                    className={`flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${response.isCorrect === true
+                                        ? 'bg-green-600 text-white'
+                                        : 'bg-green-900/20 text-green-400 hover:bg-green-900/40 border border-green-800/30'
+                                      }`}
                                   >
-                                    <CheckCircleIcon className="h-4 w-4 mr-1" />
+                                    <CheckCircleIcon className="h-4 w-4 mr-1.5" />
                                     Correct
                                   </button>
                                   <button
                                     onClick={() => handleManualGrading(selectedResponse._id, response.questionId, false)}
-                                    className="flex items-center px-3 py-1 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded-md text-sm font-medium transition-colors"
+                                    className={`flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${response.isCorrect === false
+                                        ? 'bg-red-600 text-white'
+                                        : 'bg-red-900/20 text-red-400 hover:bg-red-900/40 border border-red-800/30'
+                                      }`}
                                   >
-                                    <XCircleIcon className="h-4 w-4 mr-1" />
+                                    <XCircleIcon className="h-4 w-4 mr-1.5" />
                                     Wrong
                                   </button>
 
-                                  {/* AI Grading Button */}
-                                  <button
-                                    onClick={() => handleAIGrading(selectedResponse._id, response.questionId)}
-                                    disabled={gradingQuestion === response.questionId}
-                                    className="flex items-center px-3 py-1 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                  >
-                                    <SparklesIcon className="h-4 w-4 mr-1" />
-                                    {gradingQuestion === response.questionId ? 'Grading...' : 'AI Grade'}
-                                  </button>
+                                  {/* AI Grading Button - Only if not checked */}
+                                  {response.isCorrect === undefined && (
+                                    <button
+                                      onClick={() => handleAIGrading(selectedResponse._id, response.questionId)}
+                                      disabled={gradingQuestion === response.questionId}
+                                      className="flex items-center px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      <SparklesIcon className={`h-4 w-4 mr-1.5 ${gradingQuestion === response.questionId ? 'animate-spin' : ''}`} />
+                                      {gradingQuestion === response.questionId ? 'Grading...' : 'AI Grade'}
+                                    </button>
+                                  )}
                                 </div>
                               </div>
                             </div>
                           )}
 
-                          {/* Already Graded Message */}
-                          {response.questionType === 'qa' && response.isCorrect !== undefined && (
-                            <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                              <div className="text-sm text-green-700 dark:text-green-300 font-medium">
-                                ✓ Answer has been graded
-                              </div>
-                            </div>
-                          )}
 
                           {/* Note for MCQ questions */}
                           {response.questionType === 'mcq' && (
