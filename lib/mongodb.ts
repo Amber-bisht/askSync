@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
 
 // Authenticate against admin database, then use ai2 database
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://admin:DcYfwugSPQYxXss1@admin.6ckaw.mongodb.net/test';
-
+const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
@@ -32,7 +31,7 @@ async function connectDB() {
       dbName: 'ai2' // Switch to ai2 database after authentication
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
       console.log('Connected to MongoDB successfully');
       if (mongoose.connection.db) {
         console.log('Database:', mongoose.connection.db.databaseName);
