@@ -456,11 +456,18 @@ export default function TestResponsesPage() {
                               {formatDate(response.submittedAt)}
                             </div>
                           </div>
-                          {response.percentage !== undefined && (
-                            <div className={`text-sm font-medium ${getScoreColor(response.percentage)}`}>
-                              {response.percentage}%
-                            </div>
-                          )}
+                          <div className="text-right">
+                            {response.percentage !== undefined && (
+                              <div className={`text-sm font-medium ${getScoreColor(response.percentage)}`}>
+                                {response.percentage}%
+                              </div>
+                            )}
+                            {response.responses.some(r => r.questionType === 'qa' && r.isCorrect === undefined) && (
+                              <div className="text-[10px] text-yellow-500 font-medium uppercase tracking-wider">
+                                Pending Grading
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </button>
                     ))}
@@ -480,14 +487,17 @@ export default function TestResponsesPage() {
                       <h3 className="text-xl font-semibold text-white">
                         {selectedResponse.isAnonymous ? 'Anonymous Response' : selectedResponse.submittedBy.name || 'Unknown User'}
                       </h3>
-                      <div className="flex items-center space-x-4 text-sm text-gray-400 mt-1">
-                        <div className="flex items-center">
+                      <div className="flex items-center space-x-4 text-sm mt-1">
+                        <div className="flex items-center text-gray-400">
                           <CalendarIcon className="h-4 w-4 mr-1" />
                           {formatDate(selectedResponse.submittedAt)}
                         </div>
                         {selectedResponse.percentage !== undefined && (
                           <div className={`font-medium ${getScoreColor(selectedResponse.percentage)}`}>
                             Score: {selectedResponse.percentage}%
+                            {selectedResponse.responses.some(r => r.questionType === 'qa' && r.isCorrect === undefined) && (
+                              <span className="ml-2 text-yellow-500 text-xs uppercase tracking-wider">(Pending Grading)</span>
+                            )}
                           </div>
                         )}
                       </div>
@@ -554,8 +564,8 @@ export default function TestResponsesPage() {
                                   <button
                                     onClick={() => handleManualGrading(selectedResponse._id, response.questionId, true)}
                                     className={`flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${response.isCorrect === true
-                                        ? 'bg-green-600 text-white'
-                                        : 'bg-green-900/20 text-green-400 hover:bg-green-900/40 border border-green-800/30'
+                                      ? 'bg-green-600 text-white'
+                                      : 'bg-green-900/20 text-green-400 hover:bg-green-900/40 border border-green-800/30'
                                       }`}
                                   >
                                     <CheckCircleIcon className="h-4 w-4 mr-1.5" />
@@ -564,8 +574,8 @@ export default function TestResponsesPage() {
                                   <button
                                     onClick={() => handleManualGrading(selectedResponse._id, response.questionId, false)}
                                     className={`flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${response.isCorrect === false
-                                        ? 'bg-red-600 text-white'
-                                        : 'bg-red-900/20 text-red-400 hover:bg-red-900/40 border border-red-800/30'
+                                      ? 'bg-red-600 text-white'
+                                      : 'bg-red-900/20 text-red-400 hover:bg-red-900/40 border border-red-800/30'
                                       }`}
                                   >
                                     <XCircleIcon className="h-4 w-4 mr-1.5" />

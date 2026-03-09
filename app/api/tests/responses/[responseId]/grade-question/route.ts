@@ -185,10 +185,7 @@ Be fair but thorough in your evaluation. Consider partial credit for partially c
       return sum + (response.pointsEarned || 0);
     }, 0);
 
-    const maxScore = updatedResponses.reduce((sum: number, response: IUnifiedTestResponse['responses'][0]) => {
-      return sum + (response.maxPoints || 1);
-    }, 0);
-
+    const maxScore = testResponse.maxScore || updatedResponses.reduce((sum: number, r: any) => sum + (r.maxPoints || 1), 0);
     const percentage = maxScore > 0 ? Math.min(100, Math.round((totalScore / maxScore) * 100)) : 0;
 
     // Update the test response

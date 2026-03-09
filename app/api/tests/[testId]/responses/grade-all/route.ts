@@ -111,7 +111,7 @@ JSON format:
             if (responseUpdated) {
                 // Recalculate scores for this specific response
                 const totalScore = updatedResponses.reduce((sum, r) => sum + (r.pointsEarned || 0), 0);
-                const maxScore = updatedResponses.reduce((sum, r) => sum + (r.maxPoints || 1), 0);
+                const maxScore = testResponse.maxScore || updatedResponses.reduce((sum, r) => sum + (r.maxPoints || 1), 0);
                 const percentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
 
                 await UnifiedTestResponse.findByIdAndUpdate(testResponse._id, {
