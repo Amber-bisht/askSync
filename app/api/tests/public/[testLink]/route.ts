@@ -89,17 +89,14 @@ export async function GET(
     }
 
     // Return test data
-    // Security: Only the creator sees correct answers and explanations
+    // Security: IMPORTANT - Only the creator sees questions and correct answers in this initial fetch
+    // Students only get the metadata. Questions are fetched separately via /questions after "Start Test"
     const publicTest = {
       _id: test._id,
       testName: test.testName,
       description: test.description,
-      questions: test.questions.map(q => {
-        if (isCreator) return q;
-        // Strip sensitive fields for students
-        const { correctAnswer, explanation, ...publicQ } = q;
-        return publicQ;
-      }),
+      questions: isCreator ? test.questions : [], // Hidden for students until they start
+      questionCount: test.questions.length,
       testLink: test.testLink,
       isPublic: test.isPublic,
       showResults: test.showResults,

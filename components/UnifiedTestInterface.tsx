@@ -21,6 +21,7 @@ interface Test {
   testName: string;
   description?: string;
   questions: TestQuestion[];
+  questionCount?: number;
   settings: {
     allowAnonymous: boolean;
     showResults: boolean;
@@ -39,6 +40,7 @@ export default function UnifiedTestInterface() {
   const [test, setTest] = useState<Test | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isQuestionsLoading, setIsQuestionsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -104,7 +106,29 @@ export default function UnifiedTestInterface() {
     }
   }, [testLink, session?.user?.email]);
 
-  const startTest = () => {
+  const fetchQuestions = useCallback(async () => {
+    setIsQuestionsLoading(true);
+    try {
+      const response = await fetch(`/api/tests/public/${testLink}/questions`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setTest(prev => prev ? { ...prev, questions: data.questions } : null);
+        return true;
+      } else {
+        toast.error(data.error || 'Failed to load test questions');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+      toast.error('Failed to load test questions');
+      return false;
+    } finally {
+      setIsQuestionsLoading(false);
+    }
+  }, [testLink]);
+
+  const startTest = async () => {
     if (!session) {
       // Redirect to login with callback URL
       signIn('google', { callbackUrl: window.location.href });
@@ -114,6 +138,12 @@ export default function UnifiedTestInterface() {
     if (testStatus?.hasAttempted) {
       toast.error('You have already attempted this test');
       return;
+    }
+
+    // Fetch questions if they aren't already loaded (for non-creators)
+    if (!test?.questions || test.questions.length === 0) {
+      const success = await fetchQuestions();
+      if (!success) return;
     }
 
     setTestStarted(true);
@@ -260,7 +290,7 @@ export default function UnifiedTestInterface() {
               <div className="space-y-2 text-sm text-gray-400">
                 <div className="flex justify-between">
                   <span>Questions:</span>
-                  <span className="font-medium">{test.questions.length}</span>
+                  <span className="font-medium">{test.questionCount ?? test.questions.length}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Total Points:</span>
@@ -311,11 +341,21 @@ export default function UnifiedTestInterface() {
                 ) : (
                   <button
                     onClick={startTest}
-                    disabled={testStatus?.hasAttempted}
+                    disabled={testStatus?.hasAttempted || isQuestionsLoading}
                     className="w-full px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg transition-colors hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                   >
-                    <PlayIcon className="h-5 w-5" />
-                    <span>{testStatus?.hasAttempted ? 'Test Already Attempted' : 'Start Test'}</span>
+                    {isQuestionsLoading ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    ) : (
+                      <PlayIcon className="h-5 w-5" />
+                    )}
+                    <span>
+                      {isQuestionsLoading
+                        ? 'Loading Questions...'
+                        : testStatus?.hasAttempted
+                          ? 'Test Already Attempted'
+                          : 'Start Test'}
+                    </span>
                   </button>
                 )}
               </div>
@@ -429,7 +469,7 @@ export default function UnifiedTestInterface() {
             </p>
           )}
           <div className="mt-4 text-sm text-gray-400">
-            {test.questions.length} questions • {test.questions.reduce((sum, q) => sum + q.points, 0)} total points
+            {test.questionCount ?? test.questions.length} questions • {test.questions.reduce((sum, q) => sum + q.points, 0)} total points
           </div>
         </div>
 
