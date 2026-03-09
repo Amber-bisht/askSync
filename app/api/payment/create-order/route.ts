@@ -14,13 +14,13 @@ export async function POST(request: NextRequest) {
     }
 
     const { plan } = await request.json();
-    
+
     if (!plan || !['monthly', 'yearly'].includes(plan)) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
     }
 
     await connectDB();
-    
+
     const dbUser = await User.findOne({ email: session.user.email });
     if (!dbUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
 
     // Plan pricing (in paise - Razorpay expects amount in smallest currency unit)
     const planPricing = {
-      monthly: 35000, // ₹350.00
-      yearly: 385000, // ₹3850.00 (11 months price for 12 months - 1 month free)
+      monthly: 29900, // ₹299.00
+      yearly: 328900, // ₹3,289.00 (11 months price for 12+1 months - 1 month free)
     };
 
     const amount = planPricing[plan as keyof typeof planPricing];
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error creating payment order:', error);
-    
+
     return NextResponse.json(
       { error: 'Failed to create payment order' },
       { status: 500 }

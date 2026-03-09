@@ -45,7 +45,7 @@ export default function SimpleAIGrader({
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
         onGrade(data.score, data.feedback);
         toast.success('Answer graded successfully!');
@@ -61,20 +61,20 @@ export default function SimpleAIGrader({
   };
 
   return (
-    <div className="bg-gray-50 rounded-lg p-4">
+    <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-4 shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <h4 className="font-medium text-gray-900">AI Grading</h4>
+        <h4 className="font-medium text-white">AI Grading</h4>
         <button
           onClick={handleAIGrade}
           disabled={isGrading || isLoading}
-          className="flex items-center space-x-2 px-3 py-1 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center space-x-2 px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <SparklesIcon className="h-4 w-4" />
           <span>{isGrading ? 'Grading...' : 'Grade with AI'}</span>
         </button>
       </div>
-      <p className="text-sm text-gray-600">
-        Click the button to automatically grade this answer using AI.
+      <p className="text-sm text-gray-400">
+        Automatically grade this answer using AI to provide instant feedback and scores.
       </p>
     </div>
   );

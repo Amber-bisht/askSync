@@ -211,18 +211,18 @@ export default function UnifiedTestManager() {
                   <div
                     key={test._id}
                     className={`p-3 border rounded-lg cursor-pointer transition-colors ${selectedTest?._id === test._id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-blue-900/20'
+                      : 'border-neutral-800 hover:border-neutral-700 bg-neutral-800/50'
                       }`}
                     onClick={() => setSelectedTest(test)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 truncate">{test.testName}</h4>
-                        <p className="text-sm text-gray-500">{test.responseCount} responses</p>
-                        <p className="text-xs text-gray-400">{formatDate(test.createdAt)}</p>
+                        <h4 className="font-medium text-white truncate">{test.testName}</h4>
+                        <p className="text-sm text-gray-400">{test.responseCount} responses</p>
+                        <p className="text-xs text-gray-500">{formatDate(test.createdAt)}</p>
                         <div className="flex items-center space-x-2 mt-1">
-                          <span className={`text-xs px-2 py-1 rounded ${test.isPublic ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                          <span className={`text-xs px-2 py-1 rounded ${test.isPublic ? 'bg-green-900/30 text-green-400 border border-green-800/50' : 'bg-neutral-800 text-gray-400 border border-neutral-700'
                             }`}>
                             {test.isPublic ? 'Public' : 'Private'}
                           </span>
@@ -277,7 +277,7 @@ export default function UnifiedTestManager() {
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => copyTestLink(selectedTest.testLink)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                      className="px-4 py-2 border border-neutral-700 rounded-lg text-gray-300 hover:bg-neutral-800"
                     >
                       Copy Link
                     </button>
@@ -292,19 +292,19 @@ export default function UnifiedTestManager() {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-blue-600">{selectedTest.responseCount}</div>
-                    <div className="text-sm text-gray-600">Total Responses</div>
+                    <div className="text-sm text-gray-500">Total Responses</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-green-600">
                       {selectedTest.isActive ? 'Active' : 'Inactive'}
                     </div>
-                    <div className="text-sm text-gray-600">Status</div>
+                    <div className="text-sm text-gray-500">Status</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-600">
+                    <div className="text-2xl font-bold text-gray-400">
                       {formatDate(selectedTest.createdAt)}
                     </div>
-                    <div className="text-sm text-gray-600">Created</div>
+                    <div className="text-sm text-gray-500">Created</div>
                   </div>
                 </div>
               </div>
@@ -326,20 +326,20 @@ export default function UnifiedTestManager() {
                     {stats && (
                       <div className="grid grid-cols-4 gap-4 text-center">
                         <div>
-                          <div className="text-xl font-bold text-blue-600">{stats.totalResponses}</div>
-                          <div className="text-sm text-gray-600">Total</div>
+                          <div className="text-xl font-bold text-blue-500">{stats.totalResponses}</div>
+                          <div className="text-sm text-gray-500">Total</div>
                         </div>
                         <div>
-                          <div className="text-xl font-bold text-green-600">{stats.averageScore}%</div>
-                          <div className="text-sm text-gray-600">Avg Score</div>
+                          <div className="text-xl font-bold text-green-500">{stats.averageScore}%</div>
+                          <div className="text-sm text-gray-500">Avg Score</div>
                         </div>
                         <div>
-                          <div className="text-xl font-bold text-purple-600">{stats.perfectScores}</div>
-                          <div className="text-sm text-gray-600">Perfect</div>
+                          <div className="text-xl font-bold text-purple-500">{stats.perfectScores}</div>
+                          <div className="text-sm text-gray-500">Perfect</div>
                         </div>
                         <div>
-                          <div className="text-xl font-bold text-orange-600">{stats.passingRate}%</div>
-                          <div className="text-sm text-gray-600">Passing</div>
+                          <div className="text-xl font-bold text-orange-500">{stats.passingRate}%</div>
+                          <div className="text-sm text-gray-500">Passing</div>
                         </div>
                       </div>
                     )}
@@ -354,18 +354,18 @@ export default function UnifiedTestManager() {
                     ) : (
                       <div className="space-y-4">
                         {responses.map((response, index) => (
-                          <div key={response._id} className="border border-gray-200 rounded-lg p-4">
+                          <div key={response._id} className="border border-neutral-800 rounded-lg p-4 bg-neutral-900/50">
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center space-x-2">
                                 <span className="text-sm font-medium text-gray-500">#{index + 1}</span>
-                                <span className="text-sm text-gray-600">
+                                <span className="text-sm text-gray-300">
                                   {response.isAnonymous ? 'Anonymous' : response.submittedBy?.email || 'Unknown'}
                                 </span>
                               </div>
                               <div className="flex items-center space-x-4 text-sm text-gray-500">
                                 <span>{formatDate(response.submittedAt)}</span>
                                 {response.percentage !== undefined && (
-                                  <span className={`font-medium ${response.percentage >= 70 ? 'text-green-600' : 'text-red-600'
+                                  <span className={`font-medium ${response.percentage >= 70 ? 'text-green-500' : 'text-red-500'
                                     }`}>
                                     {response.percentage}%
                                   </span>
@@ -375,14 +375,14 @@ export default function UnifiedTestManager() {
 
                             <div className="space-y-3">
                               {response.responses.map((resp: any, respIndex: number) => (
-                                <div key={respIndex} className="bg-gray-50 rounded-lg p-3">
+                                <div key={respIndex} className="bg-neutral-800 rounded-lg p-3 border border-neutral-700">
                                   <div className="font-medium text-white mb-2">{resp.question}</div>
-                                  <div className="text-sm text-gray-700 mb-1">
-                                    Answer: <span className="font-medium">{resp.answer}</span>
+                                  <div className="text-sm text-gray-300 mb-1">
+                                    Answer: <span className="font-medium text-white">{resp.answer}</span>
                                   </div>
                                   {resp.isCorrect !== undefined && (
                                     <div className="flex items-center space-x-2 text-sm">
-                                      <span className={resp.isCorrect ? 'text-green-600' : 'text-red-600'}>
+                                      <span className={resp.isCorrect ? 'text-green-500' : 'text-red-500'}>
                                         {resp.isCorrect ? 'Correct' : 'Incorrect'}
                                       </span>
                                       <span className="text-gray-500">

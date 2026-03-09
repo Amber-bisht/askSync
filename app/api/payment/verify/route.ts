@@ -51,7 +51,8 @@ export async function POST(request: NextRequest) {
       if (plan === 'monthly') {
         subscriptionEndDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
       } else {
-        subscriptionEndDate = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 365 days
+        // 13 months for yearly plan (365 + 30 days) to honor "1 Month Free" promotion
+        subscriptionEndDate = new Date(now.getTime() + 395 * 24 * 60 * 60 * 1000);
       }
 
       // Update user subscription with new simplified limits using central method

@@ -36,16 +36,9 @@ export async function POST(
     }
 
     // Check AI grading usage limits
-    const aiGradingUsage = dbUser.isPaid 
-      ? (dbUser.monthlyAiGradingUsed || 0) 
-      : (dbUser.aiGradingUsed || 0);
-    const aiGradingLimit = dbUser.isPaid 
-      ? (dbUser.maxMonthlyAiGrading || 20) 
-      : (dbUser.maxFreeAiGrading || 2);
-
-    if (aiGradingUsage >= aiGradingLimit) {
-      return NextResponse.json({ 
-        error: dbUser.isPaid 
+    if (dbUser.aiGradingUsed >= dbUser.aiGradingLimit) {
+      return NextResponse.json({
+        error: dbUser.isPaid
           ? 'AI grading limit reached. Please contact support for assistance.'
           : 'Free AI grading limit reached. Please upgrade to grade more responses.',
         limitReached: true,
@@ -142,7 +135,7 @@ Be fair but thorough in your evaluation. Consider partial credit for partially c
 
     const systemPrompt = "You are an expert educator grading student answers. Always respond with valid JSON.";
     const content = await generateGroqContent(prompt, systemPrompt);
-    
+
     if (!content) {
       throw new Error('No response from Groq AI');
     }
@@ -162,9 +155,9 @@ Be fair but thorough in your evaluation. Consider partial credit for partially c
     }
 
     // Validate the response structure
-    if (typeof gradingResult.score !== 'number' || 
-        gradingResult.score < 0 || 
-        gradingResult.score > maxPoints) {
+    if (typeof gradingResult.score !== 'number' ||
+      gradingResult.score < 0 ||
+      gradingResult.score > maxPoints) {
       throw new Error('Invalid score from AI grading');
     }
 
@@ -209,15 +202,9 @@ Be fair but thorough in your evaluation. Consider partial credit for partially c
     });
 
     // Update user's AI grading count
-    if (dbUser.isPaid) {
-      await User.findByIdAndUpdate(dbUser._id, {
-        $inc: { monthlyAiGradingUsed: 1 }
-      });
-    } else {
-      await User.findByIdAndUpdate(dbUser._id, {
-        $inc: { aiGradingUsed: 1 }
-      });
-    }
+    await User.findByIdAndUpdate(dbUser._id, {
+      $inc: { aiGradingUsed: 1 }
+    });
 
     return NextResponse.json({
       grading: gradingResult,
@@ -232,13 +219,13 @@ Be fair but thorough in your evaluation. Consider partial credit for partially c
 
   } catch (error) {
     console.error('Error grading question with AI:', error);
-    
+
     if (error instanceof Error) {
       if (error.message === 'Unauthorized') {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to grade question with AI' },
       { status: 500 }
