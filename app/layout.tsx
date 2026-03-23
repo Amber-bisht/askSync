@@ -1,11 +1,17 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Instrument_Serif } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import Providers from '@/components/Providers';
 import Script from 'next/script';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const instrumentSerif = Instrument_Serif({ 
+  subsets: ['latin'], 
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif' 
+});
 
 export const metadata: Metadata = {
   title: 'AskSync - AI-Powered Test and Forms Management',
@@ -28,7 +34,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://checkout.razorpay.com" />
         <link rel="preconnect" href="https://api.razorpay.com" />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${instrumentSerif.variable} font-sans`}>
         <Providers>
           {children}
         </Providers>
