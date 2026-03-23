@@ -38,16 +38,16 @@ export default function HomePage() {
 
   return (
     <div className="bg-white bg-grainy text-neutral-900 selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden relative">
+      {/* Background Flares - Moved to parent for global blending */}
+      <div className="blue-glow" />
+      <div className="blue-flare" />
+      <div className="blue-flare" style={{ top: '10%', left: '70%', width: '50%', height: '50%', opacity: 0.8 }} />
+      <div className="blue-flare" style={{ top: '40%', left: '80%', width: '40%', height: '40%', opacity: 0.6 }} />
+
       <div className="min-h-screen flex flex-col relative">
         <SiteHeader />
 
-        <main className="relative flex-1 flex flex-col items-center justify-center px-4 overflow-hidden">
-          {/* Background Flares */}
-          <div className="blue-glow" />
-          <div className="blue-flare" />
-          <div className="blue-flare" style={{ top: '10%', left: '70%', width: '50%', height: '50%', opacity: 0.8 }} />
-          <div className="blue-flare" style={{ top: '40%', left: '80%', width: '40%', height: '40%', opacity: 0.6 }} />
-
+        <main className="relative flex-1 flex flex-col items-center justify-center px-4">
           <div className="relative z-10 w-full text-center px-4 max-w-5xl mx-auto">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -127,36 +127,29 @@ export default function HomePage() {
       </div>
 
       {/* Subtle Bottom Section */}
-      <footer 
-        className="py-80 border-t border-neutral-100 bg-white relative z-10 bg-cover bg-top bg-no-repeat min-h-[800px] flex items-center"
-        style={{ backgroundImage: 'url("/assets/footer-bg.webp")' }}
-      >
-        <div className="max-w-7xl mx-auto px-4 text-center w-full">
-          <div className="text-neutral-800 text-sm tracking-[0.4em] uppercase font-black mb-16">
+      <footer className="py-24 bg-transparent relative z-10">
+        <div className="max-w-7xl mx-auto px-4 text-center w-full relative z-20">
+          <div className="text-neutral-500 text-sm tracking-[0.2em] uppercase font-medium mb-16">
             © {new Date().getFullYear()} AskSync by amber bisht. Built for the future of learning.
           </div>
-          
-          <div className="flex flex-col gap-16">
-            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 text-neutral-800 text-xs font-black uppercase tracking-[0.4em]">
-              <Link href="#" className="hover:text-blue-600 transition-all border-b-2 border-transparent hover:border-blue-600 pb-1">Privacy Policy</Link>
-              <Link href="#" className="hover:text-blue-600 transition-all border-b-2 border-transparent hover:border-blue-600 pb-1">Terms of Service</Link>
-              <Link href="#" className="hover:text-blue-600 transition-all border-b-2 border-transparent hover:border-blue-600 pb-1">Contact Support</Link>
-            </div>
 
-            <div className="flex justify-center items-center gap-10">
-              <Link href="https://github.com/Amber-bisht/askSync" target="_blank" className="text-neutral-800 hover:text-blue-600 transition-all transform hover:scale-110">
-                <span className="text-xs font-black uppercase tracking-[0.2em]">GitHub</span>
+          <div className="flex justify-center items-center gap-10">
+            {[
+              { name: 'GitHub', href: 'https://github.com/Amber-bisht/askSync' },
+              { name: 'X (Twitter)', href: 'https://x.com/amber_bisht' },
+              { name: 'Instagram', href: 'https://www.instagram.com/amber_bisht/' },
+              { name: 'LinkedIn', href: 'https://www.linkedin.com/in/amber-bisht-05a096294/' }
+            ].map((social) => (
+              <Link
+                key={social.name}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-neutral-600 hover:text-black transition-all text-sm font-medium uppercase tracking-[0.1em]"
+              >
+                {social.name}
               </Link>
-              <Link href="#" className="text-neutral-800 hover:text-blue-600 transition-all transform hover:scale-110">
-                <span className="text-xs font-black uppercase tracking-[0.2em]">X (Twitter)</span>
-              </Link>
-              <Link href="#" className="text-neutral-800 hover:text-blue-600 transition-all transform hover:scale-110">
-                <span className="text-xs font-black uppercase tracking-[0.2em]">Instagram</span>
-              </Link>
-              <Link href="#" className="text-neutral-800 hover:text-blue-600 transition-all transform hover:scale-110">
-                <span className="text-xs font-black uppercase tracking-[0.2em]">LinkedIn</span>
-              </Link>
-            </div>
+            ))}
           </div>
         </div>
       </footer>
