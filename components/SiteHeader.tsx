@@ -12,37 +12,37 @@ export default function SiteHeader() {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 transition-colors duration-200 border-b border-neutral-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-5">
+    <header className="bg-white/40 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300 border-b border-neutral-200/30">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="flex justify-between items-center py-4">
           <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-black hover:text-neutral-600 transition-colors tracking-tight">
+            <Link href="/" className="text-lg font-medium text-black hover:opacity-70 transition-opacity tracking-tight font-sans">
               asksync.amberbisht.me
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link href="https://github.com/Amber-bisht/askSync" target="_blank" rel="noopener noreferrer" className="text-neutral-600 hover:text-black font-medium transition-colors">
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="https://github.com/Amber-bisht/askSync" target="_blank" rel="noopener noreferrer" className="text-sm text-neutral-500 hover:text-black font-medium transition-colors">
               GitHub
             </Link>
             {session ? (
               <>
-                <Link href="/dashboard" className="text-neutral-600 hover:text-black font-medium transition-colors">
+                <Link href="/dashboard" className="text-sm text-neutral-500 hover:text-black font-medium transition-colors">
                   Dashboard
                 </Link>
-                <Link href="/profile" className="text-neutral-600 hover:text-black font-medium transition-colors flex items-center">
-                  <UserIcon className="h-4 w-4 mr-1" />
+                <Link href="/profile" className="text-sm text-neutral-500 hover:text-black font-medium transition-colors flex items-center">
+                  <UserIcon className="h-4 w-4 mr-1.5 opacity-70" />
                   Profile
                 </Link>
-                <button onClick={() => signOut()} className="text-neutral-600 hover:text-black font-medium transition-colors">
+                <button onClick={() => signOut()} className="text-sm text-neutral-500 hover:text-black font-medium transition-colors">
                   Sign Out
                 </button>
               </>
             ) : (
               <>
-                <Link href="/auth" className="text-neutral-600 hover:text-black font-medium transition-colors">
-                  Auth
+                <Link href="/auth" className="text-sm text-neutral-500 hover:text-black font-medium transition-colors">
+                  Sign In
                 </Link>
               </>
             )}
@@ -65,12 +65,12 @@ export default function SiteHeader() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-neutral-100 space-y-4 bg-white/95 backdrop-blur-lg">
+          <nav className="md:hidden py-6 border-t border-neutral-100/50 space-y-4 bg-white/80 backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300">
             <Link
               href="https://github.com/Amber-bisht/askSync"
               target="_blank"
               rel="noopener noreferrer"
-              className="block px-2 text-neutral-600 hover:text-black font-medium"
+              className="block px-6 text-base text-neutral-500 hover:text-black font-medium transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               GitHub
@@ -79,17 +79,17 @@ export default function SiteHeader() {
               <>
                 <Link
                   href="/dashboard"
-                  className="block px-2 text-neutral-600 hover:text-black font-medium"
+                  className="block px-6 text-base text-neutral-500 hover:text-black font-medium transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/profile"
-                  className="block px-2 text-neutral-600 hover:text-black font-medium flex items-center"
+                  className="block px-6 text-base text-neutral-500 hover:text-black font-medium transition-colors flex items-center"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <UserIcon className="h-4 w-4 mr-1" />
+                  <UserIcon className="h-5 w-5 mr-2 opacity-70" />
                   Profile
                 </Link>
                 <button
@@ -97,7 +97,7 @@ export default function SiteHeader() {
                     signOut();
                     setIsMenuOpen(false);
                   }}
-                  className="block w-full text-left px-2 text-neutral-600 hover:text-black font-medium"
+                  className="block w-full text-left px-6 text-base text-neutral-500 hover:text-black font-medium transition-colors"
                 >
                   Sign Out
                 </button>
@@ -106,10 +106,10 @@ export default function SiteHeader() {
               <>
                 <Link
                   href="/auth"
-                  className="block px-2 text-neutral-600 hover:text-black font-medium"
+                  className="block px-6 text-base text-neutral-500 hover:text-black font-medium transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Auth
+                  Sign In
                 </Link>
               </>
             )}
