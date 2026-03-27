@@ -218,7 +218,6 @@ export default function QuestionGenerator({
           onClick={() => setShowGenerator(!showGenerator)}
           className="btn-primary flex items-center space-x-2"
         >
-          <PlusIcon className="h-5 w-5" />
           <span>Add Questions</span>
         </button>
       </div>
@@ -339,7 +338,6 @@ export default function QuestionGenerator({
                   </>
                 ) : (
                   <>
-                    <SparklesIcon className="h-5 w-5" />
                     <span>Generate Questions</span>
                   </>
                 )}

@@ -372,14 +372,12 @@ export default function UnifiedTestCreator() {
                 onClick={() => addManualQuestion('mcq')}
                 className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                <PlusIcon className="h-5 w-5" />
                 <span>Add MCQ</span>
               </button>
               <button
                 onClick={() => addManualQuestion('qa')}
                 className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                <PlusIcon className="h-5 w-5" />
                 <span>Add Q&A</span>
               </button>
             </div>
