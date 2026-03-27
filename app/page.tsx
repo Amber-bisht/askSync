@@ -116,7 +116,7 @@ export default function HomePage() {
                 ))}
                 <div className="pl-4 text-sm text-neutral-600 font-medium flex items-center gap-1.5">
                   <span className="text-black font-bold">4.9 /5</span>
-                  <span>from 10k+ customers</span>
+                  <span>from 10+ customers</span>
                   <span className="text-blue-500 text-lg">★</span>
                 </div>
               </div>
