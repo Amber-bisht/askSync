@@ -357,9 +357,8 @@ export default function UnifiedTestCreator() {
               <button
                 onClick={generateQuestions}
                 disabled={isGenerating || !settings.aiTopic.trim()}
-                className="flex items-center space-x-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center space-x-2 px-6 py-3 bg-black border border-neutral-800 text-white rounded-lg hover:bg-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <SparklesIcon className="h-5 w-5" />
                 <span>{isGenerating ? 'Generating...' : 'Generate Questions with AI'}</span>
               </button>
             </div>

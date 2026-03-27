@@ -491,9 +491,8 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                 <button
                   onClick={generateQuestions}
                   disabled={isGenerating || !settings.aiTopic.trim()}
-                  className="w-full flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full flex items-center justify-center px-4 py-2 bg-black border border-neutral-800 text-white rounded-lg hover:bg-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  <SparklesIcon className="h-4 w-4 mr-2" />
                   {isGenerating ? 'Generating...' : 'Generate Questions with AI'}
                 </button>
               </div>
@@ -507,14 +506,12 @@ export default function TestBuilder({ initialData, onSave }: TestBuilderProps) {
                   onClick={() => addQuestion('mcq')}
                   className="p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                 >
-                  <ListBulletIcon className="h-6 w-6 mb-1 text-blue-500" />
                   <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Multiple Choice</div>
                 </button>
                 <button
                   onClick={() => addQuestion('qa')}
                   className="p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                 >
-                  <QuestionMarkCircleIcon className="h-6 w-6 mb-1 text-green-500" />
                   <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Q&A</div>
                 </button>
               </div>
